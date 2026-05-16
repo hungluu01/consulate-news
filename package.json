@@ -13,7 +13,6 @@
     "react-dom": "18.2.0",
     "axios": "1.6.7",
     "xml2js": "0.6.2",
-    "cheerio": "1.0.0-rc.12",
-    "node-cron": "3.0.3"
+    "@upstash/redis": "1.28.0"
   }
 }
