@@ -372,7 +372,7 @@ export default function Home() {
                   <a key={i} href={article.url} target="_blank" rel="noopener noreferrer" className="article-card">
                     <div style={{display:'flex',alignItems:'flex-start',gap:'0.5rem'}}>
                       <span className="dot-accent" style={{background: source.color, marginTop:'0.3rem'}}></span>
-                      <span className="article-url">{article.url}</span>
+                      <span className="article-url">{article.title || article.url}</span>
                     </div>
                     <div className="article-date">📅 {formatDate(article.lastmod)}</div>
                   </a>
