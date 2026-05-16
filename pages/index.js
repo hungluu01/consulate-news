@@ -17,7 +17,10 @@ export default function Home() {
     try {
       const res = await fetch('/api/get-news');
       const json = await res.json();
-      setData(json);
+      console.log('Data nhận được:', json);
+      if (json?.sources?.length > 0) {
+        setData(json);
+      }
     } catch (e) {
       console.error(e);
     }
