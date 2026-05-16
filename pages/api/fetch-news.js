@@ -1,8 +1,11 @@
 import axios from 'axios';
 import xml2js from 'xml2js';
+import { Redis } from '@upstash/redis';
 
-const JSONBIN_API_KEY = process.env.JSONBIN_API_KEY;
-const JSONBIN_BIN_ID = process.env.JSONBIN_BIN_ID;
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
 
 const SOURCES = [
   {
@@ -42,16 +45,13 @@ async function parseFeed(url) {
     const res = await axios.get(url, {
       timeout: 15000,
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/120.0.0.0 Safari/537.36',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
         'Accept': 'application/rss+xml, application/xml, text/xml, */*',
-        'Accept-Language': 'vi-VN,vi;q=0.9,en;q=0.8',
       }
     });
-
     const parsed = await xml2js.parseStringPromise(res.data, { explicitArray: false });
     const items = parsed?.rss?.channel?.item || [];
     const list = Array.isArray(items) ? items : [items];
-
     return list.map(item => ({
       title: item.title || 'Không có tiêu đề',
       url: item.link || item.guid?._ || item.guid || '',
@@ -64,22 +64,6 @@ async function parseFeed(url) {
   }
 }
 
-async function saveToJsonBin(data) {
-  const headers = {
-    'Content-Type': 'application/json',
-    'X-Master-Key': JSONBIN_API_KEY
-  };
-  if (!JSONBIN_BIN_ID) {
-    const res = await axios.post('https://api.jsonbin.io/v3/b', data, {
-      headers: { ...headers, 'X-Bin-Name': 'consulate-news' }
-    });
-    return res.data.metadata.id;
-  } else {
-    await axios.put(`https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`, data, { headers });
-    return JSONBIN_BIN_ID;
-  }
-}
-
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
   const secret = req.headers['x-cron-secret'];
@@ -87,29 +71,20 @@ export default async function handler(req, res) {
 
   try {
     const results = [];
-
     for (const source of SOURCES) {
       let articles = [];
-
       for (const feedUrl of source.feeds) {
         const items = await parseFeed(feedUrl);
         articles = [...articles, ...items];
       }
-
-      // Dedupe theo URL
       const seen = new Set();
       articles = articles.filter(a => {
         if (seen.has(a.url)) return false;
         seen.add(a.url);
         return true;
       });
-
-      // Sắp xếp mới nhất trước
       articles.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-      // Lấy tối đa 20, tối thiểu giữ lại nếu có ít hơn
       articles = articles.slice(0, 20);
-
       results.push({
         country: source.country,
         flag: source.flag,
@@ -120,14 +95,13 @@ export default async function handler(req, res) {
       });
     }
 
-    const total = results.reduce((sum, s) => sum + s.articles.length, 0);
-    const binId = await saveToJsonBin({
-      lastUpdated: new Date().toISOString(),
-      sources: results
-    });
+    const data = { lastUpdated: new Date().toISOString(), sources: results };
+    await redis.set('news-data', JSON.stringify(data));
 
-    return res.status(200).json({ success: true, binId, total });
+    const total = results.reduce((sum, s) => sum + s.articles.length, 0);
+    return res.status(200).json({ success: true, total });
   } catch (e) {
+    console.error(e);
     return res.status(500).json({ error: e.message });
   }
 }
