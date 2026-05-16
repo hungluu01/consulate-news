@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import Head from 'next/head';
 
 const STORAGE_KEY = 'read_articles';
@@ -22,9 +22,8 @@ export default function Home() {
   const [readSet, setReadSet] = useState(new Set());
   const [seenSet, setSeenSet] = useState(new Set());
   const [newCount, setNewCount] = useState(0);
-  const [showBell, setShowBell] = useState(false);
 
-  useEffect(() => {
+  useEffect(function() {
     setReadSet(getReadSet());
     setSeenSet(getSeenSet());
     loadNews();
@@ -33,18 +32,18 @@ export default function Home() {
   async function loadNews() {
     setLoading(true);
     try {
-      const res = await fetch('/api/get-news');
-      const json = await res.json();
-      if (json?.sources?.length > 0) {
+      var res = await fetch('/api/get-news');
+      var json = await res.json();
+      if (json && json.sources && json.sources.length > 0) {
         setData(json);
-        // Tính bài chưa seen
-        const seen = getSeenSet();
-        let count = 0;
-        json.sources.forEach(s => s.articles.forEach(a => {
-          if (!seen.has(a.url)) count++;
-        }));
+        var seen = getSeenSet();
+        var count = 0;
+        json.sources.forEach(function(s) {
+          s.articles.forEach(function(a) {
+            if (!seen.has(a.url)) count++;
+          });
+        });
         setNewCount(count);
-        if (count > 0) setShowBell(true);
       }
     } catch (e) { console.error(e); }
     setLoading(false);
@@ -54,46 +53,52 @@ export default function Home() {
     setFetching(true);
     setMessage('Đang cập nhật từ các đại sứ quán...');
     try {
-      const res = await fetch('/api/fetch-news', {
+      var res = await fetch('/api/fetch-news', {
         method: 'POST',
         headers: { 'x-cron-secret': process.env.NEXT_PUBLIC_CRON_SECRET || '' }
       });
-      const json = await res.json();
+      var json = await res.json();
       if (json.success) {
-        setMessage(`✅ Cập nhật thành công ${json.total} bài viết!`);
+        setMessage('✅ Cập nhật thành công ' + json.total + ' bài viết!');
         await loadNews();
-      } else setMessage('❌ Lỗi: ' + json.error);
-    } catch { setMessage('❌ Lỗi kết nối'); }
+      } else {
+        setMessage('❌ Lỗi: ' + json.error);
+      }
+    } catch (e) { setMessage('❌ Lỗi kết nối'); }
     setFetching(false);
-    setTimeout(() => setMessage(''), 4000);
+    setTimeout(function() { setMessage(''); }, 4000);
   }
 
   function markRead(url) {
-    const s = new Set(readSet); s.add(url); setReadSet(s); saveReadSet(s);
-    const se = new Set(seenSet); se.add(url); setSeenSet(se); saveSeenSet(se);
+    var s = new Set(readSet); s.add(url); setReadSet(s); saveReadSet(s);
+    var se = new Set(seenSet); se.add(url); setSeenSet(se); saveSeenSet(se);
   }
 
   function markAllSeen() {
     if (!data) return;
-    const se = new Set(seenSet);
-    data.sources.forEach(s => s.articles.forEach(a => se.add(a.url)));
-    setSeenSet(se); saveSeenSet(se); setNewCount(0); setShowBell(false);
+    var se = new Set(seenSet);
+    data.sources.forEach(function(s) {
+      s.articles.forEach(function(a) { se.add(a.url); });
+    });
+    setSeenSet(se); saveSeenSet(se); setNewCount(0);
   }
 
-  const filteredSources = data?.sources?.filter(s =>
-    activeCountry === 'all' || s.country === activeCountry
-  ) || [];
+  var filteredSources = (data && data.sources ? data.sources : []).filter(function(s) {
+    return activeCountry === 'all' || s.country === activeCountry;
+  });
 
-  const formatDate = (iso) => {
+  function formatDate(iso) {
     if (!iso) return '';
     try {
-      const d = new Date(iso);
+      var d = new Date(iso);
       return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-    } catch { return iso; }
-  };
+    } catch (e) { return iso; }
+  }
+
+  var totalArticles = data && data.sources ? data.sources.reduce(function(s, x) { return s + x.articles.length; }, 0) : 0;
 
   return (
-    <>
+    <div>
       <Head>
         <title>Consulate News Monitor</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -102,7 +107,6 @@ export default function Home() {
 
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
         :root {
           --bg: #080c18;
           --surface: #0e1424;
@@ -113,438 +117,185 @@ export default function Home() {
           --text-muted: #5a6a8a;
           --text-dim: #8899bb;
           --accent: #4e9eff;
-          --accent-glow: rgba(78,158,255,0.15);
+          --accent-glow: rgba(78,158,255,0.1);
           --red: #ff4757;
-          --unread: rgba(78,158,255,0.08);
-          --read: rgba(255,255,255,0.02);
           --radius: 12px;
           --transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
         }
-
-        html { scroll-behavior: smooth; }
-
         body {
           font-family: 'DM Sans', sans-serif;
           background: var(--bg);
           color: var(--text);
           min-height: 100vh;
-          overflow-x: hidden;
         }
-
-        /* Ambient background */
-        body::before {
-          content: '';
-          position: fixed;
-          top: 0; left: 0; right: 0; bottom: 0;
-          background:
-            radial-gradient(ellipse 60% 40% at 20% 0%, rgba(78,158,255,0.04) 0%, transparent 70%),
-            radial-gradient(ellipse 40% 30% at 80% 100%, rgba(78,100,255,0.03) 0%, transparent 70%);
-          pointer-events: none;
-          z-index: 0;
-        }
-
-        /* HEADER */
         .header {
           position: sticky; top: 0; z-index: 100;
-          background: rgba(8,12,24,0.85);
+          background: rgba(8,12,24,0.9);
           backdrop-filter: blur(20px);
-          -webkit-backdrop-filter: blur(20px);
           border-bottom: 1px solid var(--border);
           padding: 0 2rem;
         }
-
         .header-inner {
-          max-width: 1280px;
-          margin: 0 auto;
-          height: 64px;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          gap: 1rem;
+          max-width: 1280px; margin: 0 auto;
+          height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 1rem;
         }
-
         .logo {
           font-family: 'DM Serif Display', serif;
-          font-size: 1.25rem;
-          color: var(--text);
-          letter-spacing: -0.02em;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
+          font-size: 1.25rem; color: var(--text); letter-spacing: -0.02em;
         }
-
         .logo-dot { color: var(--accent); }
-
-        .header-right {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        /* Bell */
+        .header-right { display: flex; align-items: center; gap: 0.75rem; }
         .bell-btn {
-          position: relative;
-          width: 38px; height: 38px;
-          border-radius: 10px;
-          border: 1px solid var(--border);
-          background: var(--surface);
-          color: var(--text-dim);
+          position: relative; width: 38px; height: 38px;
+          border-radius: 10px; border: 1px solid var(--border);
+          background: var(--surface); color: var(--text-dim);
           display: flex; align-items: center; justify-content: center;
-          cursor: pointer;
-          transition: var(--transition);
-          font-size: 1rem;
+          cursor: pointer; transition: var(--transition); font-size: 1rem;
         }
-
-        .bell-btn:hover { border-color: var(--border-hover); color: var(--accent); background: var(--surface2); }
-
+        .bell-btn:hover { border-color: var(--border-hover); color: var(--accent); }
         .bell-badge {
-          position: absolute;
-          top: -4px; right: -4px;
+          position: absolute; top: -4px; right: -4px;
           min-width: 18px; height: 18px;
-          background: var(--red);
-          border-radius: 9px;
-          font-size: 0.6rem;
-          font-weight: 700;
-          color: #fff;
+          background: var(--red); border-radius: 9px;
+          font-size: 0.6rem; font-weight: 700; color: #fff;
           display: flex; align-items: center; justify-content: center;
-          padding: 0 4px;
-          border: 2px solid var(--bg);
+          padding: 0 4px; border: 2px solid var(--bg);
           animation: pulse-badge 2s infinite;
         }
-
-        @keyframes pulse-badge {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.15); }
-        }
-
-        /* Refresh button */
+        @keyframes pulse-badge { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
         .btn-refresh {
-          height: 38px;
-          padding: 0 1.1rem;
-          border-radius: 10px;
-          border: 1px solid rgba(78,158,255,0.3);
-          background: rgba(78,158,255,0.1);
-          color: var(--accent);
-          font-family: 'DM Sans', sans-serif;
-          font-size: 0.82rem;
-          font-weight: 600;
-          cursor: pointer;
-          transition: var(--transition);
-          white-space: nowrap;
-          display: flex; align-items: center; gap: 0.4rem;
+          height: 38px; padding: 0 1.1rem;
+          border-radius: 10px; border: 1px solid rgba(78,158,255,0.3);
+          background: rgba(78,158,255,0.1); color: var(--accent);
+          font-family: 'DM Sans', sans-serif; font-size: 0.82rem; font-weight: 600;
+          cursor: pointer; transition: var(--transition); white-space: nowrap;
         }
-
         .btn-refresh:hover:not(:disabled) {
-          background: rgba(78,158,255,0.18);
-          border-color: rgba(78,158,255,0.5);
-          transform: translateY(-1px);
-          box-shadow: 0 4px 20px rgba(78,158,255,0.15);
+          background: rgba(78,158,255,0.18); border-color: rgba(78,158,255,0.5);
+          transform: translateY(-1px); box-shadow: 0 4px 20px rgba(78,158,255,0.15);
         }
-
         .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; }
-
         .spin { animation: spinning 1s linear infinite; display: inline-block; }
-        @keyframes spinning { to { transform: rotate(360deg); } }
-
-        /* Toast */
+        @keyframes spinning { to{transform:rotate(360deg)} }
         .toast {
-          position: fixed;
-          bottom: 1.5rem; left: 50%;
-          transform: translateX(-50%);
-          background: var(--surface2);
-          border: 1px solid var(--border-hover);
-          border-radius: var(--radius);
-          padding: 0.7rem 1.2rem;
-          font-size: 0.83rem;
-          color: var(--text);
-          z-index: 999;
-          white-space: nowrap;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+          position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%);
+          background: var(--surface2); border: 1px solid var(--border-hover);
+          border-radius: var(--radius); padding: 0.7rem 1.2rem;
+          font-size: 0.83rem; color: var(--text); z-index: 999;
+          white-space: nowrap; box-shadow: 0 8px 32px rgba(0,0,0,0.4);
           animation: slideUp 0.3s ease;
         }
-
-        @keyframes slideUp {
-          from { transform: translateX(-50%) translateY(10px); opacity: 0; }
-          to { transform: translateX(-50%) translateY(0); opacity: 1; }
+        @keyframes slideUp { from{transform:translateX(-50%) translateY(10px);opacity:0} to{transform:translateX(-50%) translateY(0);opacity:1} }
+        .updated-bar {
+          max-width: 1280px; margin: 0 auto; padding: 0.6rem 2rem;
+          display: flex; align-items: center; justify-content: space-between;
+          font-size: 0.75rem; color: var(--text-muted);
         }
-
-        /* TABS */
+        .updated-bar b { color: var(--accent); }
+        .mark-all-btn {
+          background: none; border: none; color: var(--text-muted);
+          font-size: 0.75rem; font-family: 'DM Sans', sans-serif;
+          cursor: pointer; padding: 3px 8px; border-radius: 5px; transition: var(--transition);
+        }
+        .mark-all-btn:hover { background: var(--surface); color: var(--accent); }
         .tabs-wrap {
-          max-width: 1280px;
-          margin: 0 auto;
-          padding: 1.25rem 2rem 0;
-          display: flex;
-          gap: 0.4rem;
-          flex-wrap: wrap;
-          align-items: center;
+          max-width: 1280px; margin: 0 auto; padding: 1rem 2rem 0;
+          display: flex; gap: 0.4rem; flex-wrap: wrap;
         }
-
         .tab {
-          height: 34px;
-          padding: 0 0.9rem;
-          border-radius: 8px;
-          border: 1px solid var(--border);
-          background: transparent;
-          color: var(--text-muted);
-          font-size: 0.8rem;
-          font-family: 'DM Sans', sans-serif;
-          font-weight: 500;
-          cursor: pointer;
-          transition: var(--transition);
+          height: 34px; padding: 0 0.9rem; border-radius: 8px;
+          border: 1px solid var(--border); background: transparent;
+          color: var(--text-muted); font-size: 0.8rem;
+          font-family: 'DM Sans', sans-serif; font-weight: 500;
+          cursor: pointer; transition: var(--transition);
           display: flex; align-items: center; gap: 0.3rem;
         }
-
         .tab:hover { border-color: var(--border-hover); color: var(--text-dim); }
-
-        .tab.active {
-          background: var(--accent-glow);
-          border-color: rgba(78,158,255,0.4);
-          color: var(--accent);
-        }
-
-        .tab-count {
-          font-size: 0.7rem;
-          background: rgba(255,255,255,0.06);
-          padding: 1px 5px;
-          border-radius: 4px;
-        }
-
-        /* MAIN */
-        .main {
-          max-width: 1280px;
-          margin: 0 auto;
-          padding: 1.5rem 2rem 3rem;
-          position: relative; z-index: 1;
-        }
-
-        /* Source block */
-        .source-block {
-          margin-bottom: 2.5rem;
-          animation: fadeIn 0.4s ease both;
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(8px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-
+        .tab.active { background: var(--accent-glow); border-color: rgba(78,158,255,0.4); color: var(--accent); }
+        .tab-count { font-size: 0.7rem; background: rgba(255,255,255,0.06); padding: 1px 5px; border-radius: 4px; }
+        .main { max-width: 1280px; margin: 0 auto; padding: 1.5rem 2rem 3rem; }
+        .source-block { margin-bottom: 2.5rem; animation: fadeIn 0.4s ease both; }
+        @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
         .source-header {
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-          margin-bottom: 1rem;
-          padding-bottom: 0.85rem;
-          border-bottom: 1px solid var(--border);
+          display: flex; align-items: center; gap: 0.75rem;
+          margin-bottom: 1rem; padding-bottom: 0.85rem; border-bottom: 1px solid var(--border);
         }
-
         .source-flag { font-size: 1.5rem; }
-
         .source-info { flex: 1; }
-
-        .source-name {
-          font-size: 0.95rem;
-          font-weight: 600;
-          color: var(--text);
-          letter-spacing: -0.01em;
-        }
-
-        .source-meta {
-          font-size: 0.72rem;
-          color: var(--text-muted);
-          margin-top: 2px;
-        }
-
+        .source-name { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+        .source-meta { font-size: 0.72rem; color: var(--text-muted); margin-top: 2px; }
         .source-badge {
-          font-size: 0.72rem;
-          color: var(--text-muted);
-          background: var(--surface);
-          border: 1px solid var(--border);
-          padding: 3px 8px;
-          border-radius: 6px;
+          font-size: 0.72rem; color: var(--text-muted);
+          background: var(--surface); border: 1px solid var(--border);
+          padding: 3px 8px; border-radius: 6px;
         }
-
-        /* Articles grid */
         .articles-grid {
           display: grid;
           grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
           gap: 0.75rem;
         }
-
-        /* Article card */
         .article-card {
-          position: relative;
-          background: var(--surface);
-          border: 1px solid var(--border);
-          border-radius: var(--radius);
-          padding: 1rem 1.1rem;
-          text-decoration: none;
-          display: block;
-          cursor: pointer;
-          transition: var(--transition);
-          overflow: hidden;
+          position: relative; background: var(--surface);
+          border: 1px solid var(--border); border-radius: var(--radius);
+          padding: 1rem 1.1rem; text-decoration: none; display: block;
+          cursor: pointer; transition: var(--transition); overflow: hidden;
         }
-
-        .article-card::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background: var(--accent-glow);
-          opacity: 0;
-          transition: var(--transition);
-          border-radius: inherit;
-        }
-
         .article-card:hover {
-          border-color: var(--border-hover);
-          transform: translateY(-2px);
-          box-shadow: 0 8px 30px rgba(0,0,0,0.3), 0 0 0 1px rgba(78,158,255,0.1);
+          border-color: var(--border-hover); transform: translateY(-2px);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.3);
         }
-
-        .article-card:hover::before { opacity: 1; }
-
-        .article-card.unread {
-          background: var(--unread);
-          border-color: rgba(78,158,255,0.12);
-        }
-
-        .article-card.read {
-          background: var(--read);
-          opacity: 0.65;
-        }
-
+        .article-card.unread { background: rgba(78,158,255,0.06); border-color: rgba(78,158,255,0.1); }
+        .article-card.read { opacity: 0.6; }
         .article-card.read:hover { opacity: 1; }
-
-        /* Unread dot */
         .unread-dot {
-          position: absolute;
-          top: 10px; right: 10px;
-          width: 8px; height: 8px;
-          background: var(--red);
-          border-radius: 50%;
-          box-shadow: 0 0 6px var(--red);
+          position: absolute; top: 10px; right: 10px;
+          width: 8px; height: 8px; background: var(--red);
+          border-radius: 50%; box-shadow: 0 0 6px var(--red);
           animation: pulse-dot 2s infinite;
         }
-
-        @keyframes pulse-dot {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.7; transform: scale(1.2); }
-        }
-
+        @keyframes pulse-dot { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.7;transform:scale(1.2)} }
         .card-accent {
-          width: 3px;
-          height: 100%;
-          position: absolute;
-          left: 0; top: 0;
-          border-radius: 12px 0 0 12px;
-          opacity: 0.7;
+          width: 3px; height: 100%; position: absolute;
+          left: 0; top: 0; border-radius: 12px 0 0 12px; opacity: 0.7;
         }
-
         .article-title {
-          font-size: 0.83rem;
-          line-height: 1.55;
-          color: var(--text);
+          font-size: 0.83rem; line-height: 1.55; color: var(--text);
           padding-left: 0.5rem;
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          position: relative;
-          z-index: 1;
+          display: -webkit-box; -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical; overflow: hidden;
         }
-
         .article-card.read .article-title { color: var(--text-dim); }
-
         .article-footer {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          margin-top: 0.6rem;
-          padding-left: 0.5rem;
-          position: relative; z-index: 1;
+          display: flex; align-items: center; justify-content: space-between;
+          margin-top: 0.6rem; padding-left: 0.5rem;
         }
-
-        .article-date {
-          font-size: 0.69rem;
-          color: var(--text-muted);
-        }
-
+        .article-date { font-size: 0.69rem; color: var(--text-muted); }
         .read-label {
-          font-size: 0.68rem;
-          color: var(--text-muted);
-          background: rgba(255,255,255,0.04);
-          padding: 2px 6px;
-          border-radius: 4px;
+          font-size: 0.68rem; color: var(--text-muted);
+          background: rgba(255,255,255,0.04); padding: 2px 6px; border-radius: 4px;
         }
-
-        /* Empty */
-        .empty {
-          text-align: center;
-          padding: 5rem 2rem;
-          color: var(--text-muted);
-        }
-
+        .empty { text-align: center; padding: 5rem 2rem; color: var(--text-muted); }
         .empty-icon { font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.4; }
         .empty h2 { font-size: 1rem; margin-bottom: 0.4rem; color: var(--text-dim); }
         .empty p { font-size: 0.83rem; }
-
-        /* Loading */
         .loading {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          min-height: 50vh;
-          gap: 1rem;
-          color: var(--text-muted);
-          font-size: 0.85rem;
+          display: flex; flex-direction: column; align-items: center;
+          justify-content: center; min-height: 50vh; gap: 1rem;
+          color: var(--text-muted); font-size: 0.85rem;
         }
-
         .loader {
           width: 32px; height: 32px;
           border: 2px solid rgba(78,158,255,0.15);
           border-top-color: var(--accent);
-          border-radius: 50%;
-          animation: spinning 0.7s linear infinite;
+          border-radius: 50%; animation: spinning 0.7s linear infinite;
         }
-
-        /* Updated bar */
-        .updated-bar {
-          max-width: 1280px;
-          margin: 0 auto;
-          padding: 0.6rem 2rem;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          font-size: 0.75rem;
-          color: var(--text-muted);
-        }
-
-        .updated-bar b { color: var(--accent); }
-
-        .mark-all-btn {
-          background: none;
-          border: none;
-          color: var(--text-muted);
-          font-size: 0.75rem;
-          font-family: 'DM Sans', sans-serif;
-          cursor: pointer;
-          padding: 3px 8px;
-          border-radius: 5px;
-          transition: var(--transition);
-        }
-
-        .mark-all-btn:hover { background: var(--surface); color: var(--accent); }
-
         @media (max-width: 640px) {
-          .header-inner { padding: 0; }
           .main { padding: 1rem; }
           .tabs-wrap { padding: 1rem 1rem 0; }
           .articles-grid { grid-template-columns: 1fr; }
-          .updated-bar { padding: 0.5rem 1rem; }
         }
       `}</style>
 
-      {/* HEADER */}
       <header className="header">
         <div className="header-inner">
           <div className="logo">
@@ -559,93 +310,112 @@ export default function Home() {
             </button>
             <button className="btn-refresh" onClick={triggerFetch} disabled={fetching}>
               <span className={fetching ? 'spin' : ''}>↻</span>
-              {fetching ? 'Đang cập nhật...' : 'Cập nhật'}
+              {' '}{fetching ? 'Đang cập nhật...' : 'Cập nhật'}
             </button>
           </div>
         </div>
       </header>
 
-      {/* Updated bar */}
-      {data?.lastUpdated && (
+      {data && data.lastUpdated && (
         <div className="updated-bar">
-          <span>Cập nhật lần cuối: <b>{formatDate(data.lastUpdated)}</b> · {data.sources?.reduce((s, x) => s + x.articles.length, 0)} bài</span>
+          <span>Cập nhật lần cuối: <b>{formatDate(data.lastUpdated)}</b> · {totalArticles} bài</span>
           {newCount > 0 && (
-            <button className="mark-all-btn" onClick={markAllSeen}>✓ Đánh dấu tất cả đã xem ({newCount})</button>
+            <button className="mark-all-btn" onClick={markAllSeen}>
+              ✓ Đánh dấu tất cả đã xem ({newCount})
+            </button>
           )}
         </div>
       )}
 
-      {/* TABS */}
-      {data?.sources?.length > 0 && (
+      {data && data.sources && data.sources.length > 0 && (
         <div className="tabs-wrap">
-          <button className={`tab ${activeCountry === 'all' ? 'active' : ''}`} onClick={() => setActiveCountry('all')}>
+          <button
+            className={'tab' + (activeCountry === 'all' ? ' active' : '')}
+            onClick={function() { setActiveCountry('all'); }}
+          >
             🌏 Tất cả
-            <span className="tab-count">{data.sources.reduce((s, x) => s + x.articles.length, 0)}</span>
+            <span className="tab-count">{totalArticles}</span>
           </button>
-          {data.sources.map(s => (
-            <button key={s.country} className={`tab ${activeCountry === s.country ? 'active' : ''}`} onClick={() => setActiveCountry(s.country)}>
-              {s.flag} {s.country}
-              <span className="tab-count">{s.articles.length}</span>
-            </button>
-          ))}
+          {data.sources.map(function(s) {
+            return (
+              <button
+                key={s.country}
+                className={'tab' + (activeCountry === s.country ? ' active' : '')}
+                onClick={function() { setActiveCountry(s.country); }}
+              >
+                {s.flag} {s.country}
+                <span className="tab-count">{s.articles.length}</span>
+              </button>
+            );
+          })}
         </div>
       )}
 
-      {/* MAIN */}
       <main className="main">
         {loading ? (
           <div className="loading">
             <div className="loader"></div>
             <span>Đang tải tin tức...</span>
           </div>
-        ) : !data?.sources?.length ? (
+        ) : (!data || !data.sources || data.sources.length === 0) ? (
           <div className="empty">
             <div className="empty-icon">📭</div>
             <h2>Chưa có dữ liệu</h2>
             <p>Click <b>Cập nhật</b> để fetch tin tức lần đầu tiên</p>
           </div>
         ) : (
-          filteredSources.map((source, si) => (
-            <div key={source.country} className="source-block" style={{ animationDelay: `${si * 0.08}s` }}>
-              <div className="source-header">
-                <span className="source-flag">{source.flag}</span>
-                <div className="source-info">
-                  <div className="source-name">{source.name}</div>
-                  <div className="source-meta">Cập nhật: {formatDate(source.updatedAt)}</div>
+          <div>
+            {filteredSources.map(function(source, si) {
+              return (
+                <div
+                  key={source.country}
+                  className="source-block"
+                  style={{ animationDelay: (si * 0.08) + 's' }}
+                >
+                  <div className="source-header">
+                    <span className="source-flag">{source.flag}</span>
+                    <div className="source-info">
+                      <div className="source-name">{source.name}</div>
+                      <div className="source-meta">Cập nhật: {formatDate(source.updatedAt)}</div>
+                    </div>
+                    <span className="source-badge">{source.articles.length} bài</span>
+                  </div>
+                  <div className="articles-grid">
+                    {source.articles.map(function(article, i) {
+                      var isRead = readSet.has(article.url);
+                      var isNew = !seenSet.has(article.url);
+                      var cardClass = 'article-card ' + (isRead ? 'read' : 'unread');
+                      return (
+                        <a
+                          key={i}
+                          href={article.url ? article.url : '#'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className={cardClass}
+                          onClick={function() { markRead(article.url); }}
+                        >
+                          <span
+                            className="card-accent"
+                            style={{ background: source.color }}
+                          ></span>
+                          {isNew && !isRead && <span className="unread-dot"></span>}
+                          <div className="article-title">{article.title}</div>
+                          <div className="article-footer">
+                            <span className="article-date">📅 {formatDate(article.date)}</span>
+                            {isRead && <span className="read-label">✓ Đã đọc</span>}
+                          </div>
+                        </a>
+                      );
+                    })}
+                  </div>
                 </div>
-                <span className="source-badge">{source.articles.length} bài</span>
-              </div>
-
-              <div className="articles-grid">
-                {source.articles.map((article, i) => {
-                  const isRead = readSet.has(article.url);
-                  const isNew = !seenSet.has(article.url);
-                 return (
-                    
-                      key={i}
-                      href={article.url || '#'}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className={`article-card ${isRead ? 'read' : 'unread'}`}
-                      onClick={() => markRead(article.url)}
-                    >
-                      <span className="card-accent" style={{ background: source.color }}></span>
-                      {isNew && !isRead && <span className="unread-dot"></span>}
-                      <div className="article-title">{article.title}</div>
-                      <div className="article-footer">
-                        <span className="article-date">📅 {formatDate(article.date)}</span>
-                        {isRead && <span className="read-label">✓ Đã đọc</span>}
-                      </div>
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-          ))
+              );
+            })}
+          </div>
         )}
       </main>
 
       {message && <div className="toast">{message}</div>}
-    </>
+    </div>
   );
 }
