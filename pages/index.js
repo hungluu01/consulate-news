@@ -620,10 +620,10 @@ export default function Home() {
                 {source.articles.map((article, i) => {
                   const isRead = readSet.has(article.url);
                   const isNew = !seenSet.has(article.url);
-                  return (
+                 return (
                     
                       key={i}
-                      href={article.url}
+                      href={article.url || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       className={`article-card ${isRead ? 'read' : 'unread'}`}
