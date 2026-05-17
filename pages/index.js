@@ -19,7 +19,24 @@ var COUNTRY_CONFIG = {
   AnDo:    { label: { vi: 'Ấn Độ', en: 'India' },    tz: 'Asia/Kolkata',     city: 'New Delhi',      brand: 'TITAN',    gradients: ['linear-gradient(135deg,#FF9933,#138808)','linear-gradient(135deg,#e67e22,#27ae60)','linear-gradient(135deg,#f39c12,#229954)'], icon: '🕌' }
 };
 
-// Dữ liệu VFS Global TP.HCM cấu trúc hóa theo yêu cầu số 4
+var COUNTRY_IMAGES = {
+  my: [
+    'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&q=80',
+    'https://images.unsplash.com/photo-1444723121867-7a241cacace9?w=800&q=80',
+    'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=800&q=80',
+  ],
+  nhat: [
+    'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
+    'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=800&q=80',
+    'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=80',
+  ],
+  han: [
+    'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&q=80',
+    'https://images.unsplash.com/photo-1538669715516-b2358f3db0dc?w=800&q=80',
+    'https://images.unsplash.com/photo-1524147041285-d8aa1315901d?w=800&q=80'
+  ]
+};
+
 var VFS_GLOBAL_DATA = {
   uk: {
     name: { vi: "VFS Global Vương Quốc Anh (UK)", en: "VFS Global United Kingdom" },
@@ -29,7 +46,7 @@ var VFS_GLOBAL_DATA = {
     email: "ukinfo.vn@vfshelpline.com",
     workingHours: "08:00 – 15:00 (Thứ 2 - Thứ 6)",
     link: "https://visa.vfsglobal.com/vnm/vi/gbr/book-an-appointment",
-    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.418471410757!2d106.69830537573617!3d10.779227559141022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f131!3m3!1m2!1m4!2sVFS+Global+UK!3m2!1d10.7792222!2d106.7008803!5m2!1sfe!2svn"
+    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447936166827!2d106.69748687586548!3d10.77700518937172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4625b1b463%3A0x6bda190fc6a44bf0!2sResco%20Building!5e0!3m2!1svi!2svn!4v1710000000000"
   },
   france: {
     name: { vi: "VFS Global Pháp & Khối Schengen", en: "VFS Global France & Schengen" },
@@ -39,7 +56,7 @@ var VFS_GLOBAL_DATA = {
     email: "info.frvn@vfshelpline.com",
     workingHours: "08:00 – 16:00 (Thứ 2 - Thứ 6)",
     link: "https://visa.vfsglobal.com/vnm/vi/fra/book-an-appointment",
-    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.418471410757!2d106.69830537573617!3d10.779227559141022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f131!3m3!1m2!1m4!2sVFS+Global+France!3m2!1d10.7792222!2d106.7008803!5m2!1sfe!2svn"
+    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447936166827!2d106.69748687586548!3d10.77700518937172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4625b1b463%3A0x6bda190fc6a44bf0!2sResco%20Building!5e0!3m2!1svi!2svn!4v1710000000000"
   },
   australia: {
     name: { vi: "VFS Global Úc (Australia)", en: "VFS Global Australia" },
@@ -49,7 +66,7 @@ var VFS_GLOBAL_DATA = {
     email: "info.auvn@vfshelpline.com",
     workingHours: "08:30 – 15:00 (Thứ 2 - Thứ 6)",
     link: "https://visa.vfsglobal.com/vnm/vi/aus/book-an-appointment",
-    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.418471410757!2d106.69830537573617!3d10.779227559141022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f131!3m3!1m2!1m4!2sVFS+Global!3m2!1d10.7792222!2d106.7008803!5m2!1sfe!2svn"
+    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447936166827!2d106.69748687586548!3d10.77700518937172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4625b1b463%3A0x6bda190fc6a44bf0!2sResco%20Building!5e0!3m2!1svi!2svn!4v1710000000000"
   },
   canada: {
     name: { vi: "VFS Global Canada (CVAC)", en: "VFS Global Canada CVAC" },
@@ -59,12 +76,12 @@ var VFS_GLOBAL_DATA = {
     email: "info.canvn@vfshelpline.com",
     workingHours: "09:00 – 16:00 (Thứ 2 - Thứ 6)",
     link: "https://visa.vfsglobal.com/vnm/vi/can/book-an-appointment",
-    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.39709885834!2d106.69085697573622!3d10.780869659110682!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f131!3m3!1m2!1m4!2sCienco+4+Building!3m2!1d10.7808643!2d106.6934318!5m2!1sfe!2svn"
+    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4182991053153!2d106.6917631758655!3d10.779268389370003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f36111ed6b9%3A0x95973d4ec74a9db9!2zVMOyYSBuaMOgIENpZW5jbyA0!5e0!3m2!1svi!2svn!4v1710000000000"
   }
 };
 
-function GradientCard({ gradients, icon, currentIdx }) {
-  var grad = gradients && gradients.length ? gradients[currentIdx % gradients.length] : 'linear-gradient(135deg,#ccc,#999)';
+function GradientCard({ gradients, icon }) {
+  var grad = gradients && gradients.length ? gradients[0] : 'linear-gradient(135deg,#ccc,#999)';
   return (
     <div className="gcard" style={{ background: grad }}>
       <div className="gicon">{icon || '🌐'}</div>
@@ -74,11 +91,9 @@ function GradientCard({ gradients, icon, currentIdx }) {
 
 export default function Home() {
   const [lang, setLang] = useState('vi');
-  const [activeMenu, setActiveMenu] = useState('portal_news'); // Điều hướng menu trang
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeCountry, setActiveCountry] = useState('all');
-  const [searchQuery, setSearchQuery] = useState('');
   const [fetching, setFetching] = useState(false);
   const [message, setMessage] = useState('');
   
@@ -88,18 +103,15 @@ export default function Home() {
   const [imgIdx, setImgIdx] = useState(0);
   const [showTop, setShowTop] = useState(false);
 
-  // States quản lý danh mục VFS Global (Yêu cầu số 4)
+  // States quản lý VFS Global và Trình tùy biến nội dung WordPress CMS mới thêm
   const [activeVfsCountry, setActiveVfsCountry] = useState('uk');
   const [activeVfsTab, setActiveVfsTab] = useState('general');
-
-  // States quản lý Hệ thống Quản trị Customizer kiểu WordPress (Yêu cầu số 3)
   const [wpAdminEnabled, setWpAdminEnabled] = useState(false);
   const [wpEditedTitles, setWpEditedTitles] = useState({});
   const [wpAlignments, setWpAlignments] = useState({});
   const [wpFontSizes, setWpFontSizes] = useState({});
 
   useEffect(() => {
-    try { setLang(navigator.language.startsWith('vi') ? 'vi' : 'en'); } catch(e){}
     loadNews();
     if (typeof window !== 'undefined') {
       try {
@@ -110,7 +122,7 @@ export default function Home() {
       } catch(e){}
     }
     var tInterval = setInterval(() => setTime(new Date()), 1000);
-    var iInterval = setInterval(() => setImgIdx(p => p + 1), 5000);
+    var iInterval = setInterval(() => setImgIdx(p => (p + 1) % 3), 5000);
     var scrollEvt = () => setShowTop(window.scrollY > 400);
     window.addEventListener('scroll', scrollEvt);
     return () => {
@@ -144,7 +156,6 @@ export default function Home() {
   }
 
   async function triggerFetch() {
-    if (fetching) return;
     setFetching(true);
     setMessage(lang === 'vi' ? 'Đang fetch tin tức từ các đại sứ quán...' : 'Fetching embassy feeds...');
     try {
@@ -174,415 +185,291 @@ export default function Home() {
     }
   }
 
-  // Các hàm tác động dữ liệu của bộ điều khiển WordPress CMS (Yêu cầu số 3)
-  function handleWpTitleChange(url, text) {
-    setWpEditedTitles(prev => ({ ...prev, [url]: text }));
-  }
-  function handleWpAlignChange(url, align) {
-    setWpAlignments(prev => ({ ...prev, [url]: align }));
-  }
+  // Các hàm điều khiển bộ CMS
+  function handleWpTitleChange(url, text) { setWpEditedTitles(prev => ({ ...prev, [url]: text })); }
+  function handleWpAlignChange(url, align) { setWpAlignments(prev => ({ ...prev, [url]: align })); }
   function handleWpFontSizeChange(url, change) {
-    var currentSize = wpFontSizes[url] || 14;
-    var newSize = Math.max(11, Math.min(22, currentSize + change));
-    setWpFontSizes(prev => ({ ...prev, [url]: newSize }));
+    var currentSize = wpFontSizes[url] || 15;
+    setWpFontSizes(prev => ({ ...prev, [url]: Math.max(12, Math.min(24, currentSize + change)) }));
   }
 
+  function fmtDate(d) { if(!d) return ''; var date = new Date(d); return isNaN(date.getTime()) ? d : date.toLocaleDateString('vi-VN'); }
   function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-  function formatDate(d) { if(!d) return ''; var date = new Date(d); return isNaN(date.getTime()) ? d : date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', {hour:'2-digit',minute:'2-digit'}); }
 
-  var filteredSources = data && data.sources ? data.sources.map(source => {
-    if (activeCountry !== 'all' && source.country !== activeCountry) return null;
-    var filteredArticles = source.articles ? source.articles.filter(article => {
-      var finalTitle = wpEditedTitles[article.url] || article.title || '';
-      return finalTitle.toLowerCase().includes(searchQuery.toLowerCase());
-    }) : [];
-    return { ...source, articles: filteredArticles };
-  }).filter(Boolean) : [];
-
-  // Yêu cầu số 1: Xây dựng hàm hiển thị đồng hồ LED điện tử, lọc bỏ từ "time" và chữ thừa
+  // Hàm tính giờ LED điện tử bóc tách chữ thừa
   function getDigitalTimeStr() {
     var cfg = COUNTRY_CONFIG[activeCountry] || { tz: 'Asia/Ho_Chi_Minh' };
     return time.toLocaleTimeString('vi-VN', { timeZone: cfg.tz, hour: '2-digit', minute: '2-digit', second: '2-digit' });
   }
 
+  var filteredSources = data && data.sources ? data.sources : [];
   var currentVfsObj = VFS_GLOBAL_DATA[activeVfsCountry];
 
   return (
-    <>
+    <div className="app-container">
       <Head>
-        <title>Consulate News Dashboard</title>
+        <title>Kênh Cập Nhật Tin Tức Visa</title>
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
 
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Inter', sans-serif; background: #f8fafc; color: #0f172a; padding-bottom: 5rem; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f6f9; color: #333; }
+        .header { background: #fff; border-bottom: 1px solid #e1e4e8; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .h-left h1 { font-size: 1.5rem; font-weight: 700; color: #111; }
+        .h-left p { font-size: 0.9rem; color: #666; margin-top: 0.25rem; }
+        .h-right { display: flex; align-items: center; gap: 1rem; }
         
-        .navbar { background: rgba(255,255,255,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid #e2e8f0; padding: 0.8rem 2rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top:0; z-index:999; }
-        .nav-logo { font-size: 1.2rem; font-weight: 800; color: #ea580c; display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
-        .nav-actions { display: flex; align-items: center; gap: 0.8rem; }
-        .menu-btn { background: transparent; border: 1px solid transparent; padding: 0.5rem 1rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.2s; }
-        .menu-btn:hover, .menu-btn.active { background: #fff7ed; border-color: #ffedd5; color: #ea580c; }
-        .wp-toggle-btn { background: #1e293b; color: #ffffff; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; border: none; cursor: pointer; margin-left: 0.5rem; }
-        .wp-toggle-btn.active { background: #ea580c; }
+        /* Thiết kế đồng hồ LED số */
+        .led-clock { background: #111; padding: 0.6rem 1.2rem; border-radius: 8px; text-align: center; border: 1px solid #222; }
+        .led-time { font-family: monospace; font-size: 1.4rem; color: #ff9f43; font-weight: bold; letter-spacing: 1px; }
+        .led-city { font-size: 0.68rem; color: #888; text-transform: uppercase; margin-top: 0.2rem; font-weight: 600; }
 
-        .banner { background: #ffffff; border-bottom: 1px solid #e2e8f0; padding: 3rem 2rem; position: relative; overflow: hidden; display: flex; justify-content: space-between; align-items: center; gap: 2rem; }
-        .banner-main { max-width: 65%; }
-        .banner-title { font-size: 1.8rem; font-weight: 800; color: #1e293b; letter-spacing: -0.5px; line-height: 1.2; }
-        .banner-sub { font-size: 0.9rem; color: #64748b; margin-top: 0.5rem; }
+        .btn-update { background: #0070f3; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
+        .btn-update:hover { background: #0051ba; }
+        .btn-wp-toggle { background: #24292e; color: #fff; border: none; padding: 0.6rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
+        .btn-wp-toggle.active { background: #e056fd; }
+
+        .nav-tabs { display: flex; gap: 0.5rem; padding: 1rem 2rem; background: #fff; border-bottom: 1px solid #e1e4e8; overflow-x: auto; }
+        .nav-btn { background: #f1f3f5; border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #495057; white-space: nowrap; transition: all 0.2s; }
+        .nav-btn.active { background: #111; color: #fff; }
+
+        .main-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .source-block { margin-bottom: 2.5rem; }
+        .source-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.2rem; }
+        .source-flag { font-size: 1.5rem; }
+        .source-name { font-size: 1.15rem; font-weight: 700; color: #222; }
+        .source-updated { font-size: 0.75rem; color: #888; margin-top: 0.15rem; }
+        .source-count { background: #e9ecef; padding: 0.2rem 0.6rem; border-radius: 10px; font-size: 0.75rem; font-weight: 600; margin-left: auto; }
+
+        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
         
-        /* Yêu cầu 1: Thiết kế giao diện đồng hồ số LED tinh xảo */
-        .digital-clock-box { background: #0f172a; border: 1px solid #1e293b; padding: 1.2rem 1.8rem; border-radius: 14px; text-align: center; min-width: 210px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
-        .digital-time-num { font-family: monospace; font-size: 1.9rem; font-weight: 700; letter-spacing: 2px; color: #fdba74; text-shadow: 0 0 8px rgba(253,186,116,0.3); }
-        .digital-city-lbl { font-size: 0.72rem; font-weight: 700; color: #94a3b8; letter-spacing: 1.5px; text-transform: uppercase; margin-top: 0.4rem; }
+        /* Giữ nguyên cấu trúc Card gốc của anh */
+        .article-card { background: #fff; border-radius: 12px; border: 1px solid #e1e4e8; overflow: hidden; text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
+        .article-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+        .gcard { height: 60px; display: flex; align-items: center; padding-left: 1rem; }
+        .gicon { font-size: 1.4rem; }
+        .card-img-wrap { height: 130px; overflow: hidden; position: relative; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; }
+        .card-body { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+        .cbar { width: 30px; height: 4px; border-radius: 2px; }
+        .ctitle { font-size: 0.92rem; font-weight: 600; color: #1a1a1a; line-height: 1.4; }
+        .cfoot { padding: 0.75rem 1rem; border-top: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
+        .cdate { font-size: 0.78rem; color: #777; }
+        .rtag { font-size: 0.75rem; color: #2ecc71; font-weight: bold; }
+        .nbadge { position: absolute; top: 10px; right: 10px; background: #e74c3c; color: #fff; font-size: 0.65rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; z-index: 5; }
+        .ndot { position: absolute; top: 12px; left: 12px; width: 8px; height: 8px; background: #e74c3c; border-radius: 50%; z-index: 6; border: 1px solid #fff; }
 
-        .container { max-width: 1300px; margin: 2rem auto; padding: 0 1.5rem; }
-        
-        /* Cấu trúc trang chủ tích hợp các Dashboard */
-        .portal-home-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
-        .portal-card-menu { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; pading: 1.5rem; padding: 1.5rem; cursor: pointer; transition: all 0.25s ease; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; min-height: 180px; }
-        .portal-card-menu:hover { transform: translateY(-4px); border-color: #fed7aa; box-shadow: 0 12px 24px rgba(234,88,12,0.05); }
-        .portal-card-head { font-size: 1.2rem; font-weight: 700; color: #1e293b; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem; }
-        .portal-card-desc { font-size: 0.85rem; color: #64748b; line-height: 1.5; }
-        .portal-card-arrow { font-size: 0.8rem; font-weight: 700; color: #ea580c; margin-top: 1rem; text-align: right; }
+        /* Khối soạn thảo WordPress CMS nội bộ Card */
+        .wp-editor-box { width: 100%; border: 1px dashed #e056fd; background: #fbf0ff; padding: 4px; border-radius: 4px; outline: none; font-family: inherit; resize: none; }
+        .wp-bar { display: flex; gap: 2px; margin-top: 4px; background: #f1f3f5; padding: 2px; border-radius: 4px; }
+        .wp-btn { font-size: 0.65rem; padding: 2px 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; }
 
-        .filter-bar { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; padding: 1rem; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1rem; }
-        .search-box { width: 100%; padding: 0.7rem 1rem; border-radius: 8px; border: 1px solid #cbd5e1; font-size: 0.85rem; outline: none; }
-        .search-box:focus { border-color: #ea580c; box-shadow: 0 0 0 3px rgba(234,88,12,0.1); }
-        
-        .tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-        .tab-btn { padding: 0.45rem 0.9rem; border-radius: 20px; background: #f1f5f9; border: 1px solid #e2e8f0; font-size: 0.82rem; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.15s; }
-        .tab-btn:hover { background: #e2e8f0; }
-        .tab-btn.active { background: #fff7ed; border-color: #ffedd5; color: #ea580c; }
+        /* Khối giao diện VFS Global thiết lập biệt lập phía dưới */
+        .vfs-container { margin-top: 4rem; border-top: 2px solid #e1e4e8; padding-top: 2rem; }
+        .vfs-title { font-size: 1.3rem; font-weight: 800; color: #111; margin-bottom: 1rem; }
+        .vfs-layout { display: grid; grid-template-columns: 240px 1fr; gap: 1.5rem; }
+        .vfs-sidebar { background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.2rem; height: fit-content; }
+        .vfs-side-btn { padding: 0.6rem 1rem; text-align: left; background: transparent; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; color: #495057; cursor: pointer; }
+        .vfs-side-btn.active { background: #f1f3f5; color: #0070f3; }
+        .vfs-content-box { background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 1.5rem; display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; }
+        .vfs-tabs { display: flex; gap: 1rem; border-bottom: 2px solid #f1f3f5; margin-bottom: 1rem; }
+        .vfs-tab-trigger { padding: 0.5rem 0; background: transparent; border: none; font-size: 0.85rem; font-weight: 700; color: #777; cursor: pointer; position: relative; }
+        .vfs-tab-trigger.active { color: #111; }
+        .vfs-tab-trigger.active::after { content:''; position: absolute; bottom: -2px; left:0; right:0; height: 2px; background: #111; }
+        .vfs-pane { font-size: 0.88rem; color: #444; line-height: 1.6; }
+        .vfs-map { border: 1px solid #e1e4e8; border-radius: 6px; overflow: hidden; height: 220px; }
+        .vfs-link { display: inline-block; margin-top: 1rem; background: #111; color: #fff; text-decoration: none; padding: 0.5rem 1rem; font-size: 0.82rem; font-weight: bold; border-radius: 4px; }
 
-        .source-block { margin-bottom: 3rem; }
-        .source-header { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1.2rem; border-bottom: 2px solid #e2e8f0; padding-bottom: 0.5rem; }
-        .source-flag { font-size: 1.4rem; }
-        .source-name { font-size: 1.1rem; font-weight: 700; color: #1e293b; }
-        .source-updated { font-size: 0.75rem; color: #94a3b8; margin-top: 0.1rem; }
-        .source-count { margin-left: auto; background: #f1f5f9; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.75rem; font-weight: 600; color: #64748b; }
+        .footer { border-top: 1px solid #e1e4e8; background: #fff; padding: 1.5rem; text-align: center; font-size: 0.8rem; color: #666; margin-top: 4rem; }
+        .brand-signature { margin-top: 0.4rem; font-size: 0.82rem; font-weight: bold; }
+        .brand-name { background: linear-gradient(90deg, #ff9f43, #ff5252); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
 
-        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.2rem; }
-        
-        /* Cấu trúc thẻ bài viết đa nhiệm tích hợp WordPress Customizer ENGINE */
-        .article-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; text-decoration: none; color: inherit; transition: all 0.2s; position: relative; min-height: 230px; justify-content: space-between; }
-        .article-card:hover { border-color: #cbd5e1; transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0,0,0,0.02); }
-        
-        .gcard { height: 75px; width: 100%; position: relative; display: flex; align-items: center; padding-left: 1.2rem; }
-        .gicon { font-size: 1.6rem; }
-        .cbody { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-        .cbar { width: 24px; height: 3px; border-radius: 2px; }
-        
-        /* WordPress Customizer CSS Rules */
-        .wp-textarea-editor { width: 100%; border: 1px dashed #ea580c; background: #fff7ed; padding: 4px; font-family: inherit; font-weight: 600; color: #0f172a; resize: none; border-radius: 6px; outline: none; }
-        .wp-inline-title { color: #1e293b; font-weight: 600; line-height: 1.4; }
-        .wp-control-panel { display: flex; gap: 0.25rem; background: #f8fafc; border: 1px solid #e2e8f0; padding: 0.3rem; border-radius: 6px; margin-top: 0.4rem; align-items: center; flex-wrap: wrap; }
-        .wp-action-tool-btn { padding: 0.2rem 0.4rem; font-size: 0.68rem; font-weight: 700; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 4px; cursor: pointer; color: #475569; }
-        .wp-action-tool-btn:hover { background: #ea580c; color: #ffffff; border-color: #ea580c; }
-
-        .cfoot { padding: 0.8rem 1rem; border-top: 1px solid #f1f5f9; display: flex; justify-content: space-between; align-items: center; font-size: 0.75rem; color: #64748b; background: #fafafa; }
-        .nbadge { position: absolute; top: 1rem; right: 1rem; background: #ef4444; color: #fff; font-size: 0.65rem; font-weight: 800; padding: 0.15rem 0.4rem; border-radius: 4px; letter-spacing: 0.5px; z-index: 10; }
-        .rtag { font-weight: 600; color: #10b981; }
-        .ndot { position: absolute; top: 34px; left: 12px; width: 8px; height: 8px; background: #ef4444; border-radius: 50%; z-index: 11; border: 2px solid #fff; }
-
-        /* Yêu cầu 4: Hệ thống Layout chuyên biệt danh mục VFS Global */
-        .vfs-main-wrapper { display: grid; grid-template-columns: 260px 1fr; gap: 1.5rem; margin-top: 0.5rem; }
-        .vfs-left-menu { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 0.6rem; display: flex; flex-direction: column; gap: 0.25rem; height: fit-content; }
-        .vfs-menu-item { padding: 0.7rem 1rem; border-radius: 8px; border: none; background: transparent; text-align: left; font-size: 0.85rem; font-weight: 600; color: #475569; cursor: pointer; transition: all 0.15s; width: 100%; }
-        .vfs-menu-item:hover { background: #f8fafc; color: #0f172a; }
-        .vfs-menu-item.active { background: #fff7ed; color: #ea580c; }
-        
-        .vfs-right-content-board { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.5rem; display: grid; grid-template-columns: 1fr 360px; gap: 1.5rem; min-height: 400px; }
-        .vfs-tab-bar { display: flex; gap: 1.5rem; border-bottom: 2px solid #f1f5f9; margin-bottom: 1.2rem; }
-        .vfs-tab-trigger { padding: 0.6rem 0.2rem; border: none; background: transparent; font-size: 0.85rem; font-weight: 700; color: #64748b; cursor: pointer; position: relative; }
-        .vfs-tab-trigger.active { color: #ea580c; }
-        .vfs-tab-trigger.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: #ea580c; }
-        .vfs-detail-pane { font-size: 0.9rem; color: #334155; line-height: 1.6; }
-        .vfs-map-container { border-radius: 10px; overflow: hidden; border: 1px solid #e2e8f0; height: 100%; min-height: 280px; background: #f8fafc; }
-
-        .btn-action { background: #ea580c; color: #ffffff; border: none; padding: 0.6rem 1.2rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.2s; text-decoration: none; }
-        .btn-action:hover { background: #c2410c; }
-        .btn-action:disabled { background: #cbd5e1; cursor: not-allowed; }
-
-        /* Yêu cầu 2: Design by Hungluu tại Footer */
-        .footer { border-top: 1px solid #e2e8f0; background: #ffffff; padding: 1.8rem 2rem; text-align: center; font-size: 0.8rem; color: #64748b; line-height: 1.5; margin-top: 5rem; }
-        .brand-sig { margin-top: 0.5rem; font-size: 0.82rem; font-weight: 700; letter-spacing: 0.5px; }
-        .brand-sig-name { background: linear-gradient(90deg, #ea580c, #f97316); -webkit-background-clip: text; -webkit-text-fillColor: transparent; font-weight: 800; }
-
-        .toast { position: fixed; bottom: 2rem; left: 2rem; background: #0f172a; color: #fff; padding: 0.8rem 1.2rem; border-radius: 8px; font-size: 0.82rem; font-weight: 500; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 9999; }
-        .to-top { position: fixed; bottom: 2rem; right: 2rem; width: 40px; height: 40px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 50%; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); color: #475569; z-index: 99; }
-        .to-top:hover { background: #f8fafc; color: #0f172a; border-color: #94a3b8; }
-        .empty { text-align: center; padding: 4rem 2rem; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0; }
-
-        @media(max-width: 960px) {
-          .banner { flex-direction: column; align-items: stretch; padding: 2rem 1.5rem; }
-          .banner-main { max-width: 100%; }
-          .vfs-right-content-board { grid-template-columns: 1fr; }
-          .vfs-main-wrapper { grid-template-columns: 1fr; }
-        }
+        .toast { position: fixed; bottom: 2rem; left: 2rem; background: #222; color: #fff; padding: 0.6rem 1.2rem; border-radius: 6px; font-size: 0.8rem; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .to-top { position: fixed; bottom: 2rem; right: 2rem; width: 36px; height: 36px; background: #fff; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; font-weight: bold; }
+        .empty { text-align: center; padding: 3rem; background: #fff; border-radius: 8px; border: 1px solid #e1e4e8; }
+        @media(max-width: 768px) { .header { flex-direction: column; align-items: flex-start; } .vfs-layout, .vfs-content-box { grid-template-columns: 1fr; } }
       `}</style>
 
-      {/* Header điều hướng Menu Đa nhiệm */}
-      <div className="navbar">
-        <div className="nav-logo" onClick={() => setActiveMenu('portal_news')}>
-          🍊 <span>Consulate News</span>
+      {/* Header Gốc */}
+      <div className="header">
+        <div className="h-left">
+          <h1>Kênh Cập Nhật Tin Tức Visa</h1>
+          <p>{lang === 'vi' ? 'Tự động cập nhật lúc 7:00 SA mỗi ngày' : 'Auto-updates at 7:00 AM'}</p>
         </div>
-        <div className="nav-actions">
-          <button className={`menu-btn ${activeMenu === 'portal_news' ? 'active' : ''}`} onClick={() => setActiveMenu('portal_news')}>
-            {lang === 'vi' ? 'Trang Chủ' : 'Dashboard'}
-          </button>
-          <button className={`menu-btn ${activeMenu === 'visa_articles' ? 'active' : ''}`} onClick={() => setActiveMenu('visa_articles')}>
-            {lang === 'vi' ? 'Tin tức Thị thực' : 'Visa Feeds'}
-          </button>
-          <button className={`menu-btn ${activeMenu === 'vfs_section' ? 'active' : ''}`} onClick={() => setActiveMenu('vfs_section')}>
-            🏢 VFS Global HCM
-          </button>
-          
-          {/* Nút bật tắt chế độ tùy biến nội dung WordPress CMS (Yêu cầu 3) */}
-          <button className={`wp-toggle-btn ${wpAdminEnabled ? 'active' : ''}`} onClick={() => setWpAdminEnabled(!wpAdminEnabled)}>
+        <div className="h-right">
+          <button className={`btn-wp-toggle ${wpAdminEnabled ? 'active' : ''}`} onClick={() => setWpAdminEnabled(!wpAdminEnabled)}>
             {wpAdminEnabled ? '🔒 Đóng WP-CMS' : '⚙️ Mở WP-CMS'}
           </button>
+          <button className="btn-update" onClick={triggerFetch}>{fetching ? '...' : (lang === 'vi' ? 'Cập nhật ngay' : 'Update')}</button>
+          
+          {/* Đồng hồ số LED độc lập không có chữ "time" thừa */}
+          <div className="led-clock">
+            <div className="led-time">{getDigitalTimeStr()}</div>
+            <div className="led-city">{(COUNTRY_CONFIG[activeCountry] || { city: 'Hồ Chí Minh' }).city}</div>
+          </div>
         </div>
       </div>
 
-      {/* Banner */}
-      <div className="banner">
-        <div className="banner-main">
-          <h1 className="banner-title">
-            {activeCountry === 'all' 
-              ? (lang === 'vi' ? 'Hệ thống Giám sát Tin tức Thị thực & Lãnh sự' : 'Global Consulate News Monitor')
-              : (COUNTRY_CONFIG[activeCountry]?.label[lang] + ' · ' + (lang === 'vi' ? 'Cập nhật Lãnh sự' : 'Consular Updates'))
-            }
-          </h1>
-          <p className="banner-sub">
-            {lang === 'vi' ? 'Dữ liệu thời gian thực hỗ trợ điều hành và quản lý nghiệp vụ thị thực du lịch quốc tế.' : 'Real-time corporate feed for travel operators and visa processing analysts.'}
-          </p>
-          <div style={{ marginTop: '1rem' }}>
-            <button className="btn-action" onClick={triggerFetch} disabled={fetching}>
-              {fetching ? (lang === 'vi' ? 'Đang cập nhật...' : 'Updating...') : (lang === 'vi' ? '🔄 Cập nhật khẩn cấp' : '🔄 Sync Feeds')}
-            </button>
-          </div>
-        </div>
-
-        {/* Yêu cầu số 1: Đồng hồ dạng số điện tử LED tinh giản độc lập, không có chữ "time" */}
-        <div className="digital-clock-box">
-          <div className="digital-time-num">{getDigitalTimeStr()}</div>
-          <div className="digital-city-lbl">{(COUNTRY_CONFIG[activeCountry] || { city: 'Hồ Chí Minh' }).city}</div>
-        </div>
+      {/* Điều hướng tabs cũ */}
+      <div className="nav-tabs">
+        <button className={`nav-btn ${activeCountry === 'all' ? 'active' : ''}`} onClick={() => setActiveCountry('all')}>
+          {lang === 'vi' ? 'Tất cả' : 'All'}
+        </button>
+        {filteredSources.map(s => (
+          <button key={s.country} className={`nav-btn ${activeCountry === s.country ? 'active' : ''}`} onClick={() => setActiveCountry(s.country)}>
+            {s.flag} {COUNTRY_CONFIG[s.country]?.label[lang] || s.name}
+          </button>
+        ))}
       </div>
 
-      {message && <div className="toast">{message}</div>}
-
-      <div className="container">
-        
-        {/* VIEW 1: TRANG CHỦ DANH MỤC (Yêu cầu số 2: Loại bỏ từ Danh Mục Quản Trị Hệ Thống) */}
-        {activeMenu === 'portal_news' && (
-          <div className="portal-home-grid">
-            <div className="portal-card-menu" onClick={() => setActiveMenu('visa_articles')}>
-              <div>
-                <div className="portal-card-head">🍊 {lang === 'vi' ? 'Tin tức Thị thực & Lãnh sự' : 'Embassy Noticeboard'}</div>
-                <div className="portal-card-desc">Quản lý các nguồn dữ liệu cập nhật tự động từ các cơ quan ngoại giao chính ngạch quốc tế.</div>
-              </div>
-              <div className="portal-card-arrow">{lang === 'vi' ? 'Truy cập bảng tin →' : 'View feeds →'}</div>
-            </div>
-
-            <div className="portal-card-menu" onClick={() => setActiveMenu('vfs_section')}>
-              <div>
-                <div className="portal-card-head">🏢 Trung Tâm Thị Thực VFS Global</div>
-                <div className="portal-card-desc">Hệ thống thông tin nghiệp vụ chi tiết của các nước Anh, Pháp, Úc, Canada... tại TP.HCM. Tích hợp định vị bản đồ và cổng lịch hẹn.</div>
-              </div>
-              <div className="portal-card-arrow">Mở danh mục VFS →</div>
-            </div>
+      <div className="main-content">
+        {loading ? (
+          <div className="empty"><p>{lang === 'vi' ? 'Đang tải tin tức...' : 'Loading news feeds...'}</p></div>
+        ) : !data || !data.sources || !data.sources.length ? (
+          <div className="empty">
+            <h2>Chưa có dữ liệu</h2>
+            <p>Click <b>"Cập nhật ngay"</b> ở trên để fetch tin tức lần đầu tiên</p>
           </div>
-        )}
-
-        {/* VIEW 2: BẢNG TIN TỨC THỊ THỰC GỐC TÍCH HỢP BỘ CMS CHỈNH SỬA TỰA WORDPRESS */}
-        {activeMenu === 'visa_articles' && (
-          <>
-            <div className="filter-bar">
-              <input type="text" className="search-box" placeholder={lang === 'vi' ? '🔍 Tìm nhanh tiêu đề thông báo...' : '🔍 Search articles...'} value={searchQuery} onChange={e => setSearchQuery(e.target.value)} />
-              {data && data.sources && data.sources.length > 0 && (
-                <div className="tabs">
-                  <button className={`tab-btn ${activeCountry === 'all' ? 'active' : ''}`} onClick={() => setActiveCountry('all')}>
-                    {lang === 'vi' ? 'Tất cả quốc gia' : 'All Regional'}
-                  </button>
-                  {data.sources.map(s => (
-                    <button key={s.country} className={`tab-btn ${activeCountry === s.country ? 'active' : ''}`} onClick={() => setActiveCountry(s.country)}>
-                      {s.flag} {COUNTRY_CONFIG[s.country]?.label[lang] || s.name}
-                    </button>
-                  ))}
+        ) : (
+          filteredSources.map(source => {
+            if (activeCountry !== 'all' && source.country !== activeCountry) return null;
+            var imgs = COUNTRY_IMAGES[source.country];
+            var cfg = COUNTRY_CONFIG[source.country] || {};
+            
+            return (
+              <div key={source.country} className="source-block">
+                <div className="source-header">
+                  <span className="source-flag">{source.flag}</span>
+                  <div>
+                    <div className="source-name">{source.name}</div>
+                    <div className="source-updated">Cập nhật: {fmtDate(source.updatedAt)}</div>
+                  </div>
+                  <span className="source-count">{source.articles.length} bài</span>
                 </div>
-              )}
-            </div>
 
-            {loading ? (
-              <div className="empty"><h2>{lang === 'vi' ? 'Đang tải tin tức...' : 'Loading news feeds...'}</h2></div>
-            ) : !data || !data.sources || !data.sources.length ? (
-              <div className="empty">
-                <h2>Chưa có dữ liệu</h2>
-                <p>Vui lòng click nút <b>Cập nhật khẩn cấp</b> để nạp thông tin lần đầu.</p>
-              </div>
-            ) : (
-              filteredSources.map(source => {
-                if (!source.articles || source.articles.length === 0) return null;
-                return (
-                  <div key={source.country} className="source-block">
-                    <div className="source-header">
-                      <span className="source-flag">{source.flag}</span>
-                      <div>
-                        <div className="source-name">{source.name}</div>
-                        <div className="source-updated">{lang === 'vi' ? 'Đồng bộ lúc:' : 'Synced:'} {formatDate(source.updatedAt || data.lastUpdated)}</div>
-                      </div>
-                      <span className="source-count">{source.articles.length} {lang === 'vi' ? 'bài viết' : 'posts'}</span>
-                    </div>
+                <div className="articles-grid">
+                  {source.articles.map((article, i) => {
+                    var isRead = readUrls.includes(article.url);
+                    var isNew = seenUrls.includes(article.url);
+                    
+                    // State WP xử lý chuỗi chữ và căn lề
+                    var displayTitle = wpEditedTitles[article.url] || article.title || '';
+                    var textAlign = wpAlignments[article.url] || 'left';
+                    var fSize = wpFontSizes[article.url] || 15;
 
-                    <div className="articles-grid">
-                      {source.articles.map((article, i) => {
-                        var isRead = readUrls.includes(article.url);
-                        var isNew = seenUrls.includes(article.url);
-                        var cfg = COUNTRY_CONFIG[source.country] || {};
+                    return (
+                      <a key={i} href={article.url} target="_blank" rel="noopener noreferrer" className="article-card" onClick={() => markRead(article.url)}>
+                        {isNew && !isRead && <span className="ndot"></span>}
+                        {(!imgs || imgs.length === 0) ? (
+                          <GradientCard gradients={cfg.gradients} icon={cfg.icon} />
+                        ) : (
+                          <div className="card-img-wrap">
+                            <img className="card-img" src={imgs[imgIdx]} alt="" onError={function(e) { e.target.parentNode.style.display = 'none'; }} />
+                          </div>
+                        )}
                         
-                        // Xử lý dữ liệu văn bản theo cấu hình WordPress CMS (Yêu cầu số 3)
-                        var displayTitle = wpEditedTitles[article.url] || article.title || article.url;
-                        var textAlignment = wpAlignments[article.url] || 'left';
-                        var currentFSize = wpFontSizes[article.url] || 14;
-
-                        return (
-                          <a key={i} href={article.url} target="_blank" rel="noopener noreferrer" className="article-card" onClick={() => markRead(article.url)}>
-                            <div>
-                              {isNew && !isRead && <span className="nbadge">{lang === 'vi' ? 'MỚI' : 'NEW'}</span>}
-                              <GradientCard gradients={cfg.gradients} icon={cfg.icon} currentIdx={imgIdx} />
-                              
-                              <div className="cbody">
-                                <div className="cbar" style={{ background: source.color || '#ea580c' }}></div>
-                                
-                                {/* Yêu cầu số 3: Tích hợp Trình tùy biến nội dung WordPress Inline */}
-                                {wpAdminEnabled ? (
-                                  <div onClick={e => e.preventDefault()}>
-                                    <textarea 
-                                      className="wp-textarea-editor"
-                                      value={displayTitle}
-                                      style={{ textAlign: textAlignment, fontSize: currentFSize + 'px' }}
-                                      onChange={e => handleWpTitleChange(article.url, e.target.value)}
-                                      rows={3}
-                                    />
-                                    {/* Thanh công cụ định dạng tựa WordPress Mini-Bar */}
-                                    <div className="wp-control-panel">
-                                      <button className="wp-action-tool-btn" onClick={() => handleWpAlignChange(article.url, 'left')}>⬅️</button>
-                                      <button className="wp-action-tool-btn" onClick={() => handleWpAlignChange(article.url, 'center')}>🔲</button>
-                                      <button className="wp-action-tool-btn" onClick={() => handleWpAlignChange(article.url, 'right')}>➡️</button>
-                                      <button className="wp-action-tool-btn" onClick={() => handleWpAlignChange(article.url, 'justify')}>Format</button>
-                                      <button className="wp-action-tool-btn" style={{marginLeft:'auto'}} onClick={() => handleWpFontSizeChange(article.url, -1)}>A-</button>
-                                      <button className="wp-action-tool-btn" onClick={() => handleWpFontSizeChange(article.url, 1)}>A+</button>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="wp-inline-title" style={{ textAlign: textAlignment, fontSize: currentFSize + 'px' }}>
-                                    {displayTitle}
-                                  </div>
-                                )}
+                        <div className="card-body">
+                          <div className="cbar" style={{ background: source.color }}></div>
+                          {isNew && !isRead && <span className="nbadge">{lang === 'vi' ? 'MỚI' : 'NEW'}</span>}
+                          
+                          {/* Khối quản trị nội dung WordPress tích hợp trực diện */}
+                          {wpAdminEnabled ? (
+                            <div onClick={e => e.preventDefault()}>
+                              <textarea 
+                                className="wp-editor-box"
+                                value={displayTitle}
+                                style={{ textAlign: textAlign, fontSize: fSize + 'px' }}
+                                onChange={e => handleWpTitleChange(article.url, e.target.value)}
+                                rows={2}
+                              />
+                              <div className="wp-bar">
+                                <button className="wp-btn" onClick={() => handleWpAlignChange(article.url, 'left')}>⬅️</button>
+                                <button className="wp-btn" onClick={() => handleWpAlignChange(article.url, 'center')}>🔲</button>
+                                <button className="wp-btn" onClick={() => handleWpAlignChange(article.url, 'right')}>➡️</button>
+                                <button className="wp-btn" onClick={() => handleWpFontSizeChange(article.url, 1)}>A+</button>
+                                <button className="wp-btn" onClick={() => handleWpFontSizeChange(article.url, -1)}>A-</button>
                               </div>
                             </div>
-
-                            <div className="cfoot">
-                              <span>📅 {formatDate(article.date || article.lastmod)}</span>
-                              {isRead && <span className="rtag">✓ {lang === 'vi' ? 'Đã xem' : 'Read'}</span>}
+                          ) : (
+                            <div className="ctitle" style={{ textAlign: textAlign, fontSize: fSize + 'px' }}>
+                              {displayTitle}
                             </div>
-                          </a>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })
-            )}
-          </>
+                          )}
+                        </div>
+
+                        <div className="cfoot">
+                          <span className="cdate">📅 {fmtDate(article.date || article.lastmod)}</span>
+                          {isRead && <span className="rtag">✓ {lang === 'vi' ? 'Đã đọc' : 'Read'}</span>}
+                        </div>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })
         )}
 
-        {/* VIEW 3: DANH MỤC KHÔNG GIAN BIỆT LẬP VFS GLOBAL HỒ CHÍ MINH (Yêu cầu số 4) */}
-        {activeMenu === 'vfs_section' && (
-          <div className="vfs-main-wrapper">
-            {/* Thanh chọn nước VFS ở cột bên trái */}
-            <div className="vfs-left-menu">
-              <button className={`vfs-menu-item ${activeVfsCountry === 'uk' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('uk')}>🇬🇧 Vương Quốc Anh (UK)</button>
-              <button className={`vfs-menu-item ${activeVfsCountry === 'france' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('france')}>🇫🇷 Pháp & Châu Âu</button>
-              <button className={`vfs-menu-item ${activeVfsCountry === 'australia' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('australia')}>🇦🇺 Nước Úc (Australia)</button>
-              <button className={`vfs-menu-item ${activeVfsCountry === 'canada' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('canada')}>🇨🇦 Quốc gia Canada</button>
+        {/* Khối VFS Global Hồ Chí Minh thêm mới hạ tầng riêng biệt bên dưới */}
+        <div className="vfs-container">
+          <div className="vfs-title">🏢 Nghiệp Vụ Trung Tâm Thị Thực VFS Global TP.HCM</div>
+          <div className="vfs-layout">
+            <div className="vfs-sidebar">
+              <button className={`vfs-side-btn ${activeVfsCountry === 'uk' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('uk')}>🇬🇧 Vương Quốc Anh (UK)</button>
+              <button className={`vfs-side-btn ${activeVfsCountry === 'france' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('france')}>🇫🇷 Pháp & Schengen</button>
+              <button className={`vfs-side-btn ${activeVfsCountry === 'australia' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('australia')}>🇦🇺 Nước Úc (Australia)</button>
+              <button className={`vfs-side-btn ${activeVfsCountry === 'canada' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('canada')}>🇨🇦 Quốc gia Canada</button>
             </div>
-
-            {/* Bảng thông tin chi tiết và Bản đồ tích hợp nằm bên phải */}
-            <div className="vfs-right-content-board">
+            <div className="vfs-content-box">
               <div>
-                <h2 style={{ fontSize: '1.25rem', color: '#0f172a', fontWeight: 800, marginBottom: '1rem' }}>
-                  {currentVfsObj.name[lang]}
-                </h2>
-                
-                {/* Các Tab thông tin nội bộ của trung tâm VFS đang chọn */}
-                <div className="vfs-tab-bar">
-                  <button className={`vfs-tab-trigger ${activeVfsTab === 'general' ? 'active' : ''}`} onClick={() => setActiveVfsTab('general')}>
-                    {lang === 'vi' ? 'Tổng quát' : 'Overview'}
-                  </button>
-                  <button className={`vfs-tab-trigger ${activeVfsTab === 'contact' ? 'active' : ''}`} onClick={() => setActiveVfsTab('contact')}>
-                    {lang === 'vi' ? 'Địa chỉ & SĐT' : 'Contact Details'}
-                  </button>
-                  <button className={`vfs-tab-trigger ${activeVfsTab === 'procedure' ? 'active' : ''}`} onClick={() => setActiveVfsTab('procedure')}>
-                    {lang === 'vi' ? 'Thủ tục & Đặt lịch' : 'Appointment'}
-                  </button>
+                <div className="vfs-tabs">
+                  <button className={`vfs-tab-trigger ${activeVfsTab === 'general' ? 'active' : ''}`} onClick={() => setActiveVfsTab('general')}>Tổng quát</button>
+                  <button className={`vfs-tab-trigger ${activeVfsTab === 'contact' ? 'active' : ''}`} onClick={() => setActiveVfsTab('contact')}>Địa chỉ & SĐT</button>
+                  <button className={`vfs-tab-trigger ${activeVfsTab === 'procedure' ? 'active' : ''}`} onClick={() => setActiveVfsTab('procedure')}>Đặt lịch hẹn</button>
                 </div>
-
-                {/* Nội dung kết xuất theo Tab tương ứng */}
-                <div className="vfs-detail-pane">
+                <div className="vfs-pane">
                   {activeVfsTab === 'general' && (
                     <div>
-                      <p style={{ marginBottom: '1rem' }}>{currentVfsObj.summary[lang]}</p>
-                      <p>🕒 <b>Thời gian tiếp nhận:</b> {currentVfsObj.workingHours}</p>
-                      <p style={{fontSize: '0.8rem', color: '#64748b', marginTop: '0.5rem'}}>*Lưu ý: Trung tâm đóng cửa vào các ngày nghỉ lễ quốc gia theo quy định của cơ quan ngoại giao.</p>
+                      <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{currentVfsObj.name.vi}</p>
+                      <p>{currentVfsObj.summary.vi}</p>
+                      <p style={{ marginTop: '0.5rem' }}>🕒 <b>Giờ làm việc:</b> {currentVfsObj.workingHours}</p>
                     </div>
                   )}
-
                   {activeVfsTab === 'contact' && (
                     <div>
-                      <p style={{ marginBottom: '0.6rem' }}>📍 <b>Địa chỉ trung tâm:</b> {currentVfsObj.address[lang]}</p>
-                      <p style={{ marginBottom: '0.6rem' }}>📞 <b>Số điện thoại Hotline:</b> {currentVfsObj.hotline}</p>
-                      <p>✉️ <b>Email tiếp nhận hỗ trợ:</b> {currentVfsObj.email}</p>
+                      <p>📍 <b>Địa chỉ:</b> {currentVfsObj.address.vi}</p>
+                      <p style={{ marginTop: '0.4rem' }}>📞 <b>Hotline:</b> {currentVfsObj.hotline}</p>
+                      <p style={{ marginTop: '0.4rem' }}>✉️ <b>Email:</b> {currentVfsObj.email}</p>
                     </div>
                   )}
-
                   {activeVfsTab === 'procedure' && (
                     <div>
-                      <p style={{ color: '#475569', marginBottom: '1.2rem' }}>
-                        {lang === 'vi' 
-                          ? 'Yêu cầu điền đầy đủ tờ khai trực tuyến, thanh toán lệ phí chính ngạch và in giấy xác nhận lịch hẹn kèm hộ chiếu gốc khi đến trung tâm.' 
-                          : 'Online application form confirmation and payment receipt are mandatory before booking biometric slots.'}
-                      </p>
-                      <a href={currentVfsObj.link} target="_blank" rel="noopener noreferrer" className="btn-action">
-                        🗓️ {lang === 'vi' ? 'Đặt lịch hẹn trực tuyến ngay' : 'Book VFS Appointment'}
-                      </a>
+                      <p>Vui lòng chuẩn bị hộ chiếu gốc, tờ khai in sẵn và lịch hẹn trước khi đến nộp dữ liệu sinh trắc học tại trung tâm.</p>
+                      <a href={currentVfsObj.link} target="_blank" rel="noopener noreferrer" className="vfs-link">Cổng đặt hẹn trực tuyến ↗</a>
                     </div>
                   )}
                 </div>
               </div>
-
-              {/* Khung bản đồ Google Maps hiển thị song song bên cạnh (Yêu cầu số 4) */}
-              <div className="vfs-map-container">
-                <iframe src={currentVfsObj.mapIframe} width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
+              <div className="vfs-map">
+                <iframe src={currentVfsObj.mapIframe} width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy"></iframe>
               </div>
             </div>
           </div>
-        )}
+        </div>
 
       </div>
 
       {showTop && <button className="to-top" onClick={scrollToTop}>↑</button>}
+      {message && <div className="toast">{message}</div>}
 
-      {/* Footer (Yêu cầu số 2: Design by Hungluu chuyên nghiệp) */}
+      {/* Footer gốc sửa thông tin và nhúng Signature dải màu mượt chuyển động */}
       <div className="footer">
-        <div>Consulate News Dashboard Portal · © 2026</div>
-        <div className="brand-sig">
-          <span style={{ color: '#94a3b8', fontWeight: 400 }}>Designed by</span> <span className="brand-sig-name">Hungluu</span>
+        <span>Consulate News Dashboard Portal</span> · {lang === 'vi' ? 'Hệ thống giám sát dữ liệu Lãnh sự' : 'Consular Data Monitor'} · © 2026
+        <div className="brand-signature">
+          <span style={{ color: '#999', fontWeight: 'normal' }}>Designed by</span> <span className="brand-name">Hungluu</span>
         </div>
       </div>
-    </>
+    </div>
   );
 }
