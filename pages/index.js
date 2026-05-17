@@ -4,472 +4,289 @@ import Head from 'next/head';
 const STORAGE_KEY = 'read_articles';
 const SEEN_KEY = 'seen_articles';
 
-var COUNTRY_CONFIG = {
-  my:      { label: { vi: 'Mỹ', en: 'USA' },         tz: 'America/New_York', city: 'Washington D.C.', brand: 'ROLEX',    gradients: ['linear-gradient(135deg,#B22234,#3C3B6E)','linear-gradient(135deg,#3C3B6E,#B22234)','linear-gradient(135deg,#c0392b,#2980b9)'], icon: '🗽' },
-  nhat:    { label: { vi: 'Nhật', en: 'Japan' },      tz: 'Asia/Tokyo',       city: 'Tokyo',          brand: 'SEIKO',    gradients: ['linear-gradient(135deg,#BC002D,#fff)','linear-gradient(135deg,#e74c3c,#fadbd8)','linear-gradient(135deg,#c0392b,#f9ebea)'],  icon: '🗼' },
-  han:     { label: { vi: 'Hàn Quốc', en: 'Korea' }, tz: 'Asia/Seoul',       city: 'Seoul',          brand: 'CARTIER',  gradients: ['linear-gradient(135deg,#003478,#CD2E3A)','linear-gradient(135deg,#1a5276,#e74c3c)','linear-gradient(135deg,#2471a3,#c0392b)'], icon: '🔮' },
-  uc:      { label: { vi: 'Úc', en: 'Australia' },   tz: 'Australia/Sydney', city: 'Canberra',       brand: 'OMEGA',    gradients: ['linear-gradient(135deg,#00008B,#FF0000)','linear-gradient(135deg,#1f3a60,#e74c3c)','linear-gradient(135deg,#1a5276,#ecf0f1)'], icon: '🦘' },
-  dailoan: { label: { vi: 'Đài Loan', en: 'Taiwan' }, tz: 'Asia/Taipei',      city: 'Taipei',         brand: 'LONGINES', gradients: ['linear-gradient(135deg,#FE8A71,#2575FC)','linear-gradient(135deg,#f39c12,#d35400)','linear-gradient(135deg,#e67e22,#2e4053)'], icon: '🏮' },
-  trung:   { label: { vi: 'Trung Quốc', en: 'China' },tz: 'Asia/Shanghai',    city: 'Beijing',        brand: 'TISSOT',   gradients: ['linear-gradient(135deg,#DE2910,#FFDE00)','linear-gradient(135deg,#c0392b,#f1c40f)','linear-gradient(135deg,#9b59b6,#e74c3c)'], icon: '🐼' },
-  Phap:    { label: { vi: 'Pháp', en: 'France' },    tz: 'Europe/Paris',     city: 'Paris',          brand: 'CHANEL',   gradients: ['linear-gradient(135deg,#002395,#ED2939)','linear-gradient(135deg,#2980b9,#ebedef)','linear-gradient(135deg,#2c3e50,#e74c3c)'], icon: '🥖' },
-  Y:       { label: { vi: 'Ý', en: 'Italy' },        tz: 'Europe/Rome',      city: 'Rome',           brand: 'GUCCI',    gradients: ['linear-gradient(135deg,#009246,#CE2B37)','linear-gradient(135deg,#27ae60,#fbffff)','linear-gradient(135deg,#229954,#cb4335)'], icon: '🍕' },
-  Duc:     { label: { vi: 'Đức', en: 'Germany' },    tz: 'Europe/Berlin',    city: 'Berlin',         brand: 'MONTBLANC',gradients: ['linear-gradient(135deg,#000000,#DD0000)','linear-gradient(135deg,#2c3e50,#f39c12)','linear-gradient(135deg,#111111,#cb4335)'], icon: '🍺' },
-  ThuySy:  { label: { vi: 'Thụy Sỹ', en: 'Swiss' },  tz: 'Europe/Zurich',    city: 'Bern',           brand: 'PATEK',    gradients: ['linear-gradient(135deg,#D52B1E,#FFFFFF)','linear-gradient(135deg,#cb4335,#f4f6f7)','linear-gradient(135deg,#b03a2e,#ecf0f1)'], icon: '🏔️' },
-  Anh:     { label: { vi: 'Anh', en: 'UK' },         tz: 'Europe/London',    city: 'London',         brand: 'BREITLING',gradients: ['linear-gradient(135deg,#00247D,#CF142B)','linear-gradient(135deg,#1b4f72,#cb4335)','linear-gradient(135deg,#2e4053,#f4f6f7)'], icon: '🏰' },
-  AnDo:    { label: { vi: 'Ấn Độ', en: 'India' },    tz: 'Asia/Kolkata',     city: 'New Delhi',      brand: 'TITAN',    gradients: ['linear-gradient(135deg,#FF9933,#138808)','linear-gradient(135deg,#e67e22,#27ae60)','linear-gradient(135deg,#f39c12,#229954)'], icon: '🕌' }
-};
-
-var COUNTRY_IMAGES = {
-  my: [
-    'https://images.unsplash.com/photo-1501594907352-04cda38ebc29?w=800&q=80',
-    'https://images.unsplash.com/photo-1444723121867-7a241cacace9?w=800&q=80',
-    'https://images.unsplash.com/photo-1485738422979-f5c462d49f74?w=800&q=80',
-  ],
-  nhat: [
-    'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=800&q=80',
-    'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=800&q=80',
-    'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=800&q=80',
-  ],
-  han: [
-    'https://images.unsplash.com/photo-1517154421773-0529f29ea451?w=800&q=80',
-    'https://images.unsplash.com/photo-1538669715516-b2358f3db0dc?w=800&q=80',
-    'https://images.unsplash.com/photo-1524147041285-d8aa1315901d?w=800&q=80'
-  ]
-};
-
-var VFS_GLOBAL_DATA = {
-  uk: {
-    name: { vi: "VFS Global Vương Quốc Anh (UK)", en: "VFS Global United Kingdom" },
-    summary: { vi: "Trung tâm tiếp nhận hồ sơ xin thị thực Vương Quốc Anh, phụ trách thu thập dữ liệu sinh trắc học và kiểm tra hồ sơ chính ngạch.", en: "Official visa application centre for the UK, collecting biometrics and documentation." },
-    address: { vi: "Tầng 5, Tòa nhà Resco, 94-96 Nguyễn Du, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh", en: "5th Floor, Resco Building, 94-96 Nguyen Du Street, Ben Nghe Ward, District 1, HCMC" },
-    hotline: "+84 28 3521 2000",
-    email: "ukinfo.vn@vfshelpline.com",
-    workingHours: "08:00 – 15:00 (Thứ 2 - Thứ 6)",
-    link: "https://visa.vfsglobal.com/vnm/vi/gbr/book-an-appointment",
-    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447936166827!2d106.69748687586548!3d10.77700518937172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4625b1b463%3A0x6bda190fc6a44bf0!2sResco%20Building!5e0!3m2!1svi!2svn!4v1710000000000"
-  },
-  france: {
-    name: { vi: "VFS Global Pháp & Khối Schengen", en: "VFS Global France & Schengen" },
-    summary: { vi: "Trung tâm được ủy quyền tiếp nhận diện thị thực ngắn hạn và dài hạn cho Cộng hòa Pháp.", en: "Authorized center processing short-stay and long-stay visa applications for France." },
-    address: { vi: "Tầng 3, Tòa nhà Resco, 94-96 Nguyễn Du, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh", en: "3th Floor, Resco Building, 94-96 Nguyen Du Street, Ben Nghe Ward, District 1, HCMC" },
-    hotline: "+84 28 3939 0849",
-    email: "info.frvn@vfshelpline.com",
-    workingHours: "08:00 – 16:00 (Thứ 2 - Thứ 6)",
-    link: "https://visa.vfsglobal.com/vnm/vi/fra/book-an-appointment",
-    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447936166827!2d106.69748687586548!3d10.77700518937172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4625b1b463%3A0x6bda190fc6a44bf0!2sResco%20Building!5e0!3m2!1svi!2svn!4v1710000000000"
-  },
-  australia: {
-    name: { vi: "VFS Global Úc (Australia)", en: "VFS Global Australia" },
-    summary: { vi: "Trung tâm cung cấp dịch vụ lấy dữ liệu sinh trắc học (vân tay và chụp hình) diện hồ sơ nộp trực tuyến qua Bộ Di Trú Úc.", en: "Biometric collection center for Australian visa applications submitted via ImmiAccount." },
-    address: { vi: "Tầng 5, Tòa nhà Resco, 94-96 Nguyễn Du, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh", en: "5th Floor, Resco Building, 94-96 Nguyen Du Street, Ben Nghe Ward, District 1, HCMC" },
-    hotline: "+84 28 3521 2000",
-    email: "info.auvn@vfshelpline.com",
-    workingHours: "08:30 – 15:00 (Thứ 2 - Thứ 6)",
-    link: "https://visa.vfsglobal.com/vnm/vi/aus/book-an-appointment",
-    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.447936166827!2d106.69748687586548!3d10.77700518937172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f4625b1b463%3A0x6bda190fc6a44bf0!2sResco%20Building!5e0!3m2!1svi!2svn!4v1710000000000"
-  },
-  canada: {
-    name: { vi: "VFS Global Canada (CVAC)", en: "VFS Global Canada CVAC" },
-    summary: { vi: "Trung tâm tiếp nhận hồ sơ xin thị thực và lấy sinh trắc học chính thức được Chính phủ Canada ủy thác.", en: "The exclusive service provider for the Government of Canada for visa applications." },
-    address: { vi: "Tầng 9, Tòa nhà Cienco 4, 180 Nguyễn Thị Minh Khai, Phường Võ Thị Sáu, Quận 3, TP. Hồ Chí Minh", en: "9th Floor, Cienco 4 Building, 180 Nguyen Thi Minh Khai Street, Vo Thi Sau Ward, District 3, HCMC" },
-    hotline: "+84 28 3829 6350",
-    email: "info.canvn@vfshelpline.com",
-    workingHours: "09:00 – 16:00 (Thứ 2 - Thứ 6)",
-    link: "https://visa.vfsglobal.com/vnm/vi/can/book-an-appointment",
-    mapIframe: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.4182991053153!2d106.6917631758655!3d10.779268389370003!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752f36111ed6b9%3A0x95973d4ec74a9db9!2zVMOyYSBuaMOgIENpZW5jbyA0!5e0!3m2!1svi!2svn!4v1710000000000"
-  }
-};
-
-function GradientCard({ gradients, icon }) {
-  var grad = gradients && gradients.length ? gradients[0] : 'linear-gradient(135deg,#ccc,#999)';
-  return (
-    <div className="gcard" style={{ background: grad }}>
-      <div className="gicon">{icon || '🌐'}</div>
-    </div>
-  );
-}
+const GLOBAL_LANDSCAPES = [
+  'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=1200&q=80',
+  'https://images.unsplash.com/photo-1534430480872-3498386e7856?w=1200&q=80',
+  'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?w=1200&q=80',
+  'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=1200&q=80',
+  'https://images.unsplash.com/photo-1617541086271-64d852077e6b?w=1200&q=80',
+  'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?w=1200&q=80',
+  'https://images.unsplash.com/photo-149 Chester-85c8e12f0c0e?w=1200&q=80',
+  'https://images.unsplash.com/photo-1528360983277-13d401cdc186?w=1200&q=80',
+  'https://images.unsplash.com/photo-1492571350019-22de08371fd3?w=1200&q=80',
+  'https://images.unsplash.com/photo-1545569341-9eb8b30979d9?w=1200&q=80',
+  'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=1200&q=80',
+  'https://images.unsplash.com/photo-1547886596-4301beceb43e?w=1200&q=80',
+  'https://images.unsplash.com/photo-1503899036084-c55cdd92da26?w=1200&q=80',
+  'https://images.unsplash.com/photo-1518156677180-95a2893f3e9f?w=1200&q=80',
+  'https://images.unsplash.com/photo-1533105079780-92b9be482077?w=1200&q=80',
+  'https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=1200&q=80',
+  'https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=1200&q=80',
+  'https://images.unsplash.com/photo-1488646953014-85cb44e25828?w=1200&q=80',
+  'https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=1200&q=80',
+  'https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=1200&q=80',
+  'https://images.unsplash.com/photo-1527631746610-bca00a040d60?w=1200&q=80',
+  'https://images.unsplash.com/photo-1449034446853-66c86144b0ad?w=1200&q=80',
+  'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80',
+  'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=1200&q=80',
+  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=1200&q=80',
+  'https://images.unsplash.com/photo-1519046904884-53103b34b206?w=1200&q=80',
+  'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=1200&q=80',
+  'https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?w=1200&q=80',
+  'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?w=1200&q=80',
+  'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=1200&q=80',
+  'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=1200&q=80',
+  'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=1200&q=80'
+];
 
 export default function Home() {
-  const [lang, setLang] = useState('vi');
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeCountry, setActiveCountry] = useState('all');
   const [fetching, setFetching] = useState(false);
   const [message, setMessage] = useState('');
-  
-  const [readUrls, setReadUrls] = useState([]);
-  const [seenUrls, setSeenUrls] = useState([]);
-  const [time, setTime] = useState(new Date());
-  const [imgIdx, setImgIdx] = useState(0);
-  const [showTop, setShowTop] = useState(false);
-
-  // States quản lý VFS Global và Trình tùy biến nội dung WordPress CMS mới thêm
-  const [activeVfsCountry, setActiveVfsCountry] = useState('uk');
-  const [activeVfsTab, setActiveVfsTab] = useState('general');
-  const [wpAdminEnabled, setWpAdminEnabled] = useState(false);
-  const [wpEditedTitles, setWpEditedTitles] = useState({});
-  const [wpAlignments, setWpAlignments] = useState({});
-  const [wpFontSizes, setWpFontSizes] = useState({});
+  const [currentMenu, setCurrentMenu] = useState('news');
+  const [showToTop, setShowToTop] = useState(false);
 
   useEffect(() => {
     loadNews();
-    if (typeof window !== 'undefined') {
-      try {
-        var r = localStorage.getItem(STORAGE_KEY);
-        if(r) setReadUrls(JSON.parse(r));
-        var s = localStorage.getItem(SEEN_KEY);
-        if(s) setSeenUrls(JSON.parse(s));
-      } catch(e){}
-    }
-    var tInterval = setInterval(() => setTime(new Date()), 1000);
-    var iInterval = setInterval(() => setImgIdx(p => (p + 1) % 3), 5000);
-    var scrollEvt = () => setShowTop(window.scrollY > 400);
-    window.addEventListener('scroll', scrollEvt);
-    return () => {
-      clearInterval(tInterval);
-      clearInterval(iInterval);
-      window.removeEventListener('scroll', scrollEvt);
+    const handleScroll = () => {
+      setShowToTop(window.scrollY > 300);
     };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   async function loadNews() {
     setLoading(true);
     try {
-      var res = await fetch('/api/get-news');
-      var json = await res.json();
+      const res = await fetch('/api/get-news');
+      const json = await res.json();
       setData(json);
-      if (json && json.sources && typeof window !== 'undefined') {
-        var currentUrls = [];
-        json.sources.forEach(s => {
-          if(s.articles) s.articles.forEach(a => currentUrls.push(a.url));
-        });
-        try {
-          var s = localStorage.getItem(SEEN_KEY);
-          var parsed = s ? JSON.parse(s) : [];
-          var updated = Array.from(new Set([...parsed, ...currentUrls]));
-          localStorage.setItem(SEEN_KEY, JSON.stringify(updated));
-          setSeenUrls(updated);
-        } catch(e){}
-      }
-    } catch(e){ console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
     setLoading(false);
   }
 
   async function triggerFetch() {
     setFetching(true);
-    setMessage(lang === 'vi' ? 'Đang fetch tin tức từ các đại sứ quán...' : 'Fetching embassy feeds...');
+    setMessage('Đang kết nối đến hệ thống máy chủ dữ liệu Ngoại Giao...');
     try {
-      var res = await fetch('/api/fetch-news', {
+      const res = await fetch('/api/fetch-news', {
         method: 'POST',
         headers: { 'x-cron-secret': process.env.NEXT_PUBLIC_CRON_SECRET || '' }
       });
-      var json = await res.json();
+      const json = await res.json();
       if (json.success) {
-        setMessage(lang === 'vi' ? `✅ Cập nhật thành công ${json.total} bài viết!` : `✅ Updated ${json.total} articles successfully!`);
+        setMessage(`✅ Cập nhật hoàn tất! Đồng bộ thành công ${json.total} cổng thông tin.`);
         await loadNews();
       } else {
         setMessage('❌ Lỗi: ' + json.error);
       }
-    } catch(e){
-      setMessage(lang === 'vi' ? '❌ Lỗi kết nối' : '❌ Connection error');
+    } catch (e) {
+      setMessage('❌ Không thể kết nối API Gateway');
     }
     setFetching(false);
-    setTimeout(() => setMessage(''), 5000);
+    setTimeout(() => setMessage(''), 4000);
   }
 
-  function markRead(url) {
-    if (!readUrls.includes(url)) {
-      var u = [...readUrls, url];
-      setReadUrls(u);
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); } catch(e){}
-    }
-  }
-
-  // Các hàm điều khiển bộ CMS
-  function handleWpTitleChange(url, text) { setWpEditedTitles(prev => ({ ...prev, [url]: text })); }
-  function handleWpAlignChange(url, align) { setWpAlignments(prev => ({ ...prev, [url]: align })); }
-  function handleWpFontSizeChange(url, change) {
-    var currentSize = wpFontSizes[url] || 15;
-    setWpFontSizes(prev => ({ ...prev, [url]: Math.max(12, Math.min(24, currentSize + change)) }));
-  }
-
-  function fmtDate(d) { if(!d) return ''; var date = new Date(d); return isNaN(date.getTime()) ? d : date.toLocaleDateString('vi-VN'); }
-  function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
-
-  // Hàm tính giờ LED điện tử bóc tách chữ thừa
-  function getDigitalTimeStr() {
-    var cfg = COUNTRY_CONFIG[activeCountry] || { tz: 'Asia/Ho_Chi_Minh' };
-    return time.toLocaleTimeString('vi-VN', { timeZone: cfg.tz, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  }
-
-  var filteredSources = data && data.sources ? data.sources : [];
-  var currentVfsObj = VFS_GLOBAL_DATA[activeVfsCountry];
+  const filteredSources = data?.sources || [];
 
   return (
-    <div className="app-container">
+    <>
       <Head>
-        <title>Kênh Cập Nhật Tin Tức Visa</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Kênh Thông Tin Thị Thực Quốc Tế</title>
+        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
       </Head>
 
       <style>{`
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background: #f4f6f9; color: #333; }
-        .header { background: #fff; border-bottom: 1px solid #e1e4e8; padding: 1.5rem 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
-        .h-left h1 { font-size: 1.5rem; font-weight: 700; color: #111; }
-        .h-left p { font-size: 0.9rem; color: #666; margin-top: 0.25rem; }
-        .h-right { display: flex; align-items: center; gap: 1rem; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f7fafc; color: #2d3748; -webkit-font-smoothing: antialiased; }
         
-        /* Thiết kế đồng hồ LED số */
-        .led-clock { background: #111; padding: 0.6rem 1.2rem; border-radius: 8px; text-align: center; border: 1px solid #222; }
-        .led-time { font-family: monospace; font-size: 1.4rem; color: #ff9f43; font-weight: bold; letter-spacing: 1px; }
-        .led-city { font-size: 0.68rem; color: #888; text-transform: uppercase; margin-top: 0.2rem; font-weight: 600; }
-
-        .btn-update { background: #0070f3; color: #fff; border: none; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.9rem; transition: background 0.2s; }
-        .btn-update:hover { background: #0051ba; }
-        .btn-wp-toggle { background: #24292e; color: #fff; border: none; padding: 0.6rem 1rem; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 0.85rem; }
-        .btn-wp-toggle.active { background: #e056fd; }
-
-        .nav-tabs { display: flex; gap: 0.5rem; padding: 1rem 2rem; background: #fff; border-bottom: 1px solid #e1e4e8; overflow-x: auto; }
-        .nav-btn { background: #f1f3f5; border: none; padding: 0.5rem 1rem; border-radius: 20px; cursor: pointer; font-size: 0.85rem; font-weight: 600; color: #495057; white-space: nowrap; transition: all 0.2s; }
-        .nav-btn.active { background: #111; color: #fff; }
-
-        .main-content { padding: 2rem; max-width: 1400px; margin: 0 auto; }
-        .source-block { margin-bottom: 2.5rem; }
-        .source-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.2rem; }
-        .source-flag { font-size: 1.5rem; }
-        .source-name { font-size: 1.15rem; font-weight: 700; color: #222; }
-        .source-updated { font-size: 0.75rem; color: #888; margin-top: 0.15rem; }
-        .source-count { background: #e9ecef; padding: 0.2rem 0.6rem; border-radius: 10px; font-size: 0.75rem; font-weight: 600; margin-left: auto; }
-
-        .articles-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .main-navigation-header { background: #ffffff; border-bottom: 1px solid #edf2f7; position: sticky; top: 0; z-index: 100; }
+        .nav-inner-container { max-width: 1280px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; }
+        .branding-logo-zone { display: flex; align-items: center; gap: 0.75rem; }
+        .branding-icon { font-size: 1.8rem; background: #ebf8ff; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 12px; }
+        .branding-text h1 { font-family: 'Playfair Display', serif; font-size: 1.35rem; color: #1a202c; font-weight: 600; }
+        .branding-text p { font-size: 0.75rem; color: #718096; letter-spacing: 0.05em; text-transform: uppercase; margin-top: 0.1rem; }
         
-        /* Giữ nguyên cấu trúc Card gốc của anh */
-        .article-card { background: #fff; border-radius: 12px; border: 1px solid #e1e4e8; overflow: hidden; text-decoration: none; color: inherit; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
-        .article-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
-        .gcard { height: 60px; display: flex; align-items: center; padding-left: 1rem; }
-        .gicon { font-size: 1.4rem; }
-        .card-img-wrap { height: 130px; overflow: hidden; position: relative; }
-        .card-img { width: 100%; height: 100%; object-fit: cover; }
-        .card-body { padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem; }
-        .cbar { width: 30px; height: 4px; border-radius: 2px; }
-        .ctitle { font-size: 0.92rem; font-weight: 600; color: #1a1a1a; line-height: 1.4; }
-        .cfoot { padding: 0.75rem 1rem; border-top: 1px solid #f1f3f5; display: flex; justify-content: space-between; align-items: center; }
-        .cdate { font-size: 0.78rem; color: #777; }
-        .rtag { font-size: 0.75rem; color: #2ecc71; font-weight: bold; }
-        .nbadge { position: absolute; top: 10px; right: 10px; background: #e74c3c; color: #fff; font-size: 0.65rem; font-weight: bold; padding: 0.2rem 0.5rem; border-radius: 4px; z-index: 5; }
-        .ndot { position: absolute; top: 12px; left: 12px; width: 8px; height: 8px; background: #e74c3c; border-radius: 50%; z-index: 6; border: 1px solid #fff; }
+        .menu-tabs-navigation { display: flex; gap: 0.5rem; }
+        .menu-nav-btn { background: transparent; border: none; padding: 0.6rem 1.1rem; font-size: 0.9rem; font-weight: 500; color: #4a5568; cursor: pointer; border-radius: 8px; transition: all 0.2s; }
+        .menu-nav-btn:hover { background: #f7fafc; color: #1a202c; }
+        .menu-nav-btn.active { background: #2b6cb0; color: #ffffff; font-weight: 600; }
 
-        /* Khối soạn thảo WordPress CMS nội bộ Card */
-        .wp-editor-box { width: 100%; border: 1px dashed #e056fd; background: #fbf0ff; padding: 4px; border-radius: 4px; outline: none; font-family: inherit; resize: none; }
-        .wp-bar { display: flex; gap: 2px; margin-top: 4px; background: #f1f3f5; padding: 2px; border-radius: 4px; }
-        .wp-btn { font-size: 0.65rem; padding: 2px 4px; border: 1px solid #ccc; background: #fff; cursor: pointer; font-weight: bold; }
+        .action-button-group { display: flex; align-items: center; gap: 0.75rem; }
+        .btn-sync-action { background: #1a202c; color: #ffffff; border: none; padding: 0.65rem 1.25rem; border-radius: 8px; font-size: 0.85rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; transition: background 0.2s; }
+        .btn-sync-action:hover { background: #2d3748; }
 
-        /* Khối giao diện VFS Global thiết lập biệt lập phía dưới */
-        .vfs-container { margin-top: 4rem; border-top: 2px solid #e1e4e8; padding-top: 2rem; }
-        .vfs-title { font-size: 1.3rem; font-weight: 800; color: #111; margin-bottom: 1rem; }
-        .vfs-layout { display: grid; grid-template-columns: 240px 1fr; gap: 1.5rem; }
-        .vfs-sidebar { background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.2rem; height: fit-content; }
-        .vfs-side-btn { padding: 0.6rem 1rem; text-align: left; background: transparent; border: none; border-radius: 6px; font-size: 0.85rem; font-weight: 600; color: #495057; cursor: pointer; }
-        .vfs-side-btn.active { background: #f1f3f5; color: #0070f3; }
-        .vfs-content-box { background: #fff; border: 1px solid #e1e4e8; border-radius: 8px; padding: 1.5rem; display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; }
-        .vfs-tabs { display: flex; gap: 1rem; border-bottom: 2px solid #f1f3f5; margin-bottom: 1rem; }
-        .vfs-tab-trigger { padding: 0.5rem 0; background: transparent; border: none; font-size: 0.85rem; font-weight: 700; color: #777; cursor: pointer; position: relative; }
-        .vfs-tab-trigger.active { color: #111; }
-        .vfs-tab-trigger.active::after { content:''; position: absolute; bottom: -2px; left:0; right:0; height: 2px; background: #111; }
-        .vfs-pane { font-size: 0.88rem; color: #444; line-height: 1.6; }
-        .vfs-map { border: 1px solid #e1e4e8; border-radius: 6px; overflow: hidden; height: 220px; }
-        .vfs-link { display: inline-block; margin-top: 1rem; background: #111; color: #fff; text-decoration: none; padding: 0.5rem 1rem; font-size: 0.82rem; font-weight: bold; border-radius: 4px; }
+        .country-filter-bar { background: #ffffff; border-bottom: 1px solid #edf2f7; padding: 0.75rem 2rem; }
+        .filter-scroll-wrapper { max-width: 1280px; margin: 0 auto; display: flex; gap: 0.5rem; overflow-x: auto; padding-bottom: 2px; }
+        .filter-scroll-wrapper::-webkit-scrollbar { height: 4px; }
+        .filter-scroll-wrapper::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        .country-pill-btn { background: #f7fafc; border: 1px solid #e2e8f0; padding: 0.45rem 1rem; border-radius: 20px; font-size: 0.82rem; font-weight: 500; color: #4a5568; cursor: pointer; white-space: nowrap; transition: all 0.2s; }
+        .country-pill-btn:hover { background: #edf2f7; border-color: #cbd5e0; }
+        .country-pill-btn.active { background: #1a202c; color: #ffffff; border-color: #1a202c; }
 
-        .footer { border-top: 1px solid #e1e4e8; background: #fff; padding: 1.5rem; text-align: center; font-size: 0.8rem; color: #666; margin-top: 4rem; }
-        .brand-signature { margin-top: 0.4rem; font-size: 0.82rem; font-weight: bold; }
-        .brand-name { background: linear-gradient(90deg, #ff9f43, #ff5252); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; }
+        .app-workspace-content { max-width: 1280px; margin: 2rem auto; padding: 0 2rem; }
+        .section-headline { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: #1a202c; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.7rem; }
+        .section-headline span { font-size: 0.9rem; font-family: 'Plus Jakarta Sans', sans-serif; color: #718096; font-weight: normal; margin-left: auto; }
 
-        .toast { position: fixed; bottom: 2rem; left: 2rem; background: #222; color: #fff; padding: 0.6rem 1.2rem; border-radius: 6px; font-size: 0.8rem; z-index: 999; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .to-top { position: fixed; bottom: 2rem; right: 2rem; width: 36px; height: 36px; background: #fff; border: 1px solid #ccc; border-radius: 50%; cursor: pointer; font-weight: bold; }
-        .empty { text-align: center; padding: 3rem; background: #fff; border-radius: 8px; border: 1px solid #e1e4e8; }
-        @media(max-width: 768px) { .header { flex-direction: column; align-items: flex-start; } .vfs-layout, .vfs-content-box { grid-template-columns: 1fr; } }
+        .grid-layout-stream { display: grid; grid-template-columns: repeat(auto-fill, minmax(310px, 1fr)); gap: 1.75rem; margin-bottom: 3.5rem; }
+        .news-item-card { background: #ffffff; border-radius: 14px; border: 1px solid #edf2f7; overflow: hidden; display: flex; flex-direction: column; text-decoration: none; color: inherit; transition: transform 0.25s, box-shadow 0.25s; }
+        .news-item-card:hover { transform: translateY(-4px); box-shadow: 0 10px 20px rgba(0,0,0,0.04); }
+        .card-visual-header { height: 7px; width: 100%; }
+        .card-inner-padding { padding: 1.25rem; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .meta-source-row { display: flex; align-items: center; gap: 0.5rem; font-size: 0.78rem; color: #718096; font-weight: 500; margin-bottom: 0.75rem; }
+        .source-indicator-dot { width: 6px; height: 6px; border-radius: 50%; }
+        .article-title { font-size: 0.92rem; font-weight: 600; color: #1a202c; line-height: 1.5; margin-bottom: 1.25rem; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .card-bottom-meta { display: flex; justify-content: space-between; align-items: center; padding-top: 0.75rem; border-top: 1px solid #f7fafc; font-size: 0.78rem; color: #a0aec0; }
+
+        .static-page-wrapper { background: #ffffff; border: 1px solid #edf2f7; border-radius: 16px; padding: 2.5rem; min-height: 400px; }
+        .static-grid-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; margin-top: 2rem; }
+        .gallery-photo-item { height: 180px; border-radius: 10px; background-size: cover; background-position: center; transition: transform 0.2s; border: 1px solid #edf2f7; }
+        .gallery-photo-item:hover { transform: scale(1.02); }
+
+        .footer-credits-bar { text-align: center; padding: 2rem; background: #ffffff; border-top: 1px solid #edf2f7; margin-top: 5rem; font-size: 0.82rem; color: #718096; }
+        .toast-notify-alert { position: fixed; bottom: 2rem; left: 2rem; background: #1a202c; color: #ffffff; padding: 0.75rem 1.5rem; border-radius: 10px; font-size: 0.85rem; font-weight: 500; z-index: 1000; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        .scroll-to-top-btn { position: fixed; bottom: 2rem; right: 2rem; width: 44px; height: 44px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 50%; cursor: pointer; font-size: 1.1rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: all 0.2s; opacity: 0; visibility: hidden; z-index: 90; }
+        .scroll-to-top-btn.visible { opacity: 1; visibility: visible; }
+        .scroll-to-top-btn:hover { background: #f7fafc; transform: translateY(-2px); }
+        
+        .empty { text-align: center; padding: 4rem 2rem; background: #ffffff; border-radius: 16px; border: 1px solid #edf2f7; }
+        .empty h2 { font-family: 'Playfair Display', serif; font-size: 1.4rem; margin-bottom: 0.5rem; }
+        .empty p { color: #718096; font-size: 0.9rem; }
       `}</style>
 
-      {/* Header Gốc */}
-      <div className="header">
-        <div className="h-left">
-          <h1>Kênh Cập Nhật Tin Tức Visa</h1>
-          <p>{lang === 'vi' ? 'Tự động cập nhật lúc 7:00 SA mỗi ngày' : 'Auto-updates at 7:00 AM'}</p>
-        </div>
-        <div className="h-right">
-          <button className={`btn-wp-toggle ${wpAdminEnabled ? 'active' : ''}`} onClick={() => setWpAdminEnabled(!wpAdminEnabled)}>
-            {wpAdminEnabled ? '🔒 Đóng WP-CMS' : '⚙️ Mở WP-CMS'}
-          </button>
-          <button className="btn-update" onClick={triggerFetch}>{fetching ? '...' : (lang === 'vi' ? 'Cập nhật ngay' : 'Update')}</button>
-          
-          {/* Đồng hồ số LED độc lập không có chữ "time" thừa */}
-          <div className="led-clock">
-            <div className="led-time">{getDigitalTimeStr()}</div>
-            <div className="led-city">{(COUNTRY_CONFIG[activeCountry] || { city: 'Hồ Chí Minh' }).city}</div>
+      {/* Main Bar Navigation */}
+      <div className="main-navigation-header">
+        <div className="nav-inner-container">
+          <div className="branding-logo-zone">
+            <div className="branding-icon">🌍</div>
+            <div className="branding-text">
+              <h1>Kênh Thông Tin Thị Thực</h1>
+              <p>Hệ Thống Phân Tích Lãnh Sự</p>
+            </div>
+          </div>
+
+          <div className="menu-tabs-navigation">
+            <button className={`menu-nav-btn ${currentMenu === 'news' ? 'active' : ''}`} onClick={() => setCurrentMenu('news')}>📰 Luồng Tin Tức</button>
+            <button className={`menu-nav-btn ${currentMenu === 'maps' ? 'active' : ''}`} onClick={() => setCurrentMenu('maps')}>📍 Chỉ Đường Lãnh Sự</button>
+            <button className={`menu-nav-btn ${currentMenu === 'gallery' ? 'active' : ''}`} onClick={() => setCurrentMenu('gallery')}>🖼️ Thư Viện Không Gian</button>
+          </div>
+
+          <div className="action-button-group">
+            <button className="btn-sync-action" onClick={triggerFetch}>
+              {fetching ? '⏳ Đang đồng bộ...' : '🔄 Đồng bộ đám mây'}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Điều hướng tabs cũ */}
-      <div className="nav-tabs">
-        <button className={`nav-btn ${activeCountry === 'all' ? 'active' : ''}`} onClick={() => setActiveCountry('all')}>
-          {lang === 'vi' ? 'Tất cả' : 'All'}
-        </button>
-        {filteredSources.map(s => (
-          <button key={s.country} className={`nav-btn ${activeCountry === s.country ? 'active' : ''}`} onClick={() => setActiveCountry(s.country)}>
-            {s.flag} {COUNTRY_CONFIG[s.country]?.label[lang] || s.name}
-          </button>
-        ))}
-      </div>
-
-      <div className="main-content">
-        {loading ? (
-          <div className="empty"><p>{lang === 'vi' ? 'Đang tải tin tức...' : 'Loading news feeds...'}</p></div>
-        ) : !data || !data.sources || !data.sources.length ? (
-          <div className="empty">
-            <h2>Chưa có dữ liệu</h2>
-            <p>Click <b>"Cập nhật ngay"</b> ở trên để fetch tin tức lần đầu tiên</p>
+      {/* Country Filter Pill Zone */}
+      {currentMenu === 'news' && (
+        <div className="country-filter-bar">
+          <div className="filter-scroll-wrapper">
+            <button className={`country-pill-btn ${activeCountry === 'all' ? 'active' : ''}`} onClick={() => setActiveCountry('all')}>Tất cả quốc gia</button>
+            {filteredSources.map(s => (
+              <button key={s.country} className={`country-pill-btn ${activeCountry === s.country ? 'active' : ''}`} onClick={() => setActiveCountry(s.country)}>
+                {s.flag} {s.name.replace('Lãnh sự quán ', '').replace('Tổng lãnh sự quán ', '')}
+              </button>
+            ))}
           </div>
-        ) : (
-          filteredSources.map(source => {
-            if (activeCountry !== 'all' && source.country !== activeCountry) return null;
-            var imgs = COUNTRY_IMAGES[source.country];
-            var cfg = COUNTRY_CONFIG[source.country] || {};
-            
-            return (
-              <div key={source.country} className="source-block">
-                <div className="source-header">
-                  <span className="source-flag">{source.flag}</span>
-                  <div>
-                    <div className="source-name">{source.name}</div>
-                    <div className="source-updated">Cập nhật: {fmtDate(source.updatedAt)}</div>
-                  </div>
-                  <span className="source-count">{source.articles.length} bài</span>
-                </div>
+        </div>
+      )}
 
-                <div className="articles-grid">
-                  {source.articles.map((article, i) => {
-                    var isRead = readUrls.includes(article.url);
-                    var isNew = seenUrls.includes(article.url);
-                    
-                    // State WP xử lý chuỗi chữ và căn lề
-                    var displayTitle = wpEditedTitles[article.url] || article.title || '';
-                    var textAlign = wpAlignments[article.url] || 'left';
-                    var fSize = wpFontSizes[article.url] || 15;
+      {/* Application Workspace Main Container */}
+      <div className="app-workspace-content">
+        
+        {/* MENU 1: LUỒNG TIN TỨC CHÍNH */}
+        {currentMenu === 'news' && (
+          loading ? (
+            <div className="empty"><p>Đang tải cấu trúc luồng tin tức quốc tế...</p></div>
+          ) : !filteredSources.length ? (
+            <div className="empty">
+              <h2>Cơ sở dữ liệu trống</h2>
+              <p>Vui lòng chọn nút "Đồng bộ đám mây" ở góc trên để nạp dữ liệu từ RSS.</p>
+            </div>
+          ) : (
+            filteredSources.map(source => {
+              if (activeCountry !== 'all' && source.country !== activeCountry) return null;
+              if (!source.articles || source.articles.length === 0) return null;
 
-                    return (
-                      <a key={i} href={article.url} target="_blank" rel="noopener noreferrer" className="article-card" onClick={() => markRead(article.url)}>
-                        {isNew && !isRead && <span className="ndot"></span>}
-                        {(!imgs || imgs.length === 0) ? (
-                          <GradientCard gradients={cfg.gradients} icon={cfg.icon} />
-                        ) : (
-                          <div className="card-img-wrap">
-                            <img className="card-img" src={imgs[imgIdx]} alt="" onError={function(e) { e.target.parentNode.style.display = 'none'; }} />
+              return (
+                <div key={source.country} style={{ marginBottom: '2.5rem' }}>
+                  <h2 className="section-headline">
+                    {source.flag} {source.name}
+                    <span>Cập nhật mới nhất: {new Date(source.updatedAt).toLocaleDateString('vi-VN')}</span>
+                  </h2>
+
+                  <div className="grid-layout-stream">
+                    {source.articles.map((article, idx) => (
+                      <a key={idx} href={article.url} target="_blank" rel="noopener noreferrer" className="news-item-card">
+                        <div className="card-visual-header" style={{ background: source.color }}></div>
+                        <div className="card-inner-padding">
+                          <div>
+                            <div className="meta-source-row">
+                              <span className="source-indicator-dot" style={{ background: source.color }}></span>
+                              {source.name.replace('Tổng lãnh sự quán ', '').replace('Lãnh sự quán ', '')}
+                            </div>
+                            <div className="article-title">{article.title}</div>
                           </div>
-                        )}
-                        
-                        <div className="card-body">
-                          <div className="cbar" style={{ background: source.color }}></div>
-                          {isNew && !isRead && <span className="nbadge">{lang === 'vi' ? 'MỚI' : 'NEW'}</span>}
-                          
-                          {/* Khối quản trị nội dung WordPress tích hợp trực diện */}
-                          {wpAdminEnabled ? (
-                            <div onClick={e => e.preventDefault()}>
-                              <textarea 
-                                className="wp-editor-box"
-                                value={displayTitle}
-                                style={{ textAlign: textAlign, fontSize: fSize + 'px' }}
-                                onChange={e => handleWpTitleChange(article.url, e.target.value)}
-                                rows={2}
-                              />
-                              <div className="wp-bar">
-                                <button className="wp-btn" onClick={() => handleWpAlignChange(article.url, 'left')}>⬅️</button>
-                                <button className="wp-btn" onClick={() => handleWpAlignChange(article.url, 'center')}>🔲</button>
-                                <button className="wp-btn" onClick={() => handleWpAlignChange(article.url, 'right')}>➡️</button>
-                                <button className="wp-btn" onClick={() => handleWpFontSizeChange(article.url, 1)}>A+</button>
-                                <button className="wp-btn" onClick={() => handleWpFontSizeChange(article.url, -1)}>A-</button>
-                              </div>
-                            </div>
-                          ) : (
-                            <div className="ctitle" style={{ textAlign: textAlign, fontSize: fSize + 'px' }}>
-                              {displayTitle}
-                            </div>
-                          )}
-                        </div>
-
-                        <div className="cfoot">
-                          <span className="cdate">📅 {fmtDate(article.date || article.lastmod)}</span>
-                          {isRead && <span className="rtag">✓ {lang === 'vi' ? 'Đã đọc' : 'Read'}</span>}
+                          <div className="card-bottom-meta">
+                            <span>📅 {article.date ? new Date(article.date).toLocaleDateString('vi-VN') : 'Mới cập nhật'}</span>
+                            <span style={{ color: '#3182ce', fontWeight: '500' }}>Chi tiết ↗</span>
+                          </div>
                         </div>
                       </a>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })
+          )
         )}
 
-        {/* Khối VFS Global Hồ Chí Minh thêm mới hạ tầng riêng biệt bên dưới */}
-        <div className="vfs-container">
-          <div className="vfs-title">🏢 Nghiệp Vụ Trung Tâm Thị Thực VFS Global TP.HCM</div>
-          <div className="vfs-layout">
-            <div className="vfs-sidebar">
-              <button className={`vfs-side-btn ${activeVfsCountry === 'uk' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('uk')}>🇬🇧 Vương Quốc Anh (UK)</button>
-              <button className={`vfs-side-btn ${activeVfsCountry === 'france' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('france')}>🇫🇷 Pháp & Schengen</button>
-              <button className={`vfs-side-btn ${activeVfsCountry === 'australia' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('australia')}>🇦🇺 Nước Úc (Australia)</button>
-              <button className={`vfs-side-btn ${activeVfsCountry === 'canada' ? 'active' : ''}`} onClick={() => setActiveVfsCountry('canada')}>🇨🇦 Quốc gia Canada</button>
-            </div>
-            <div className="vfs-content-box">
+        {/* MENU 2: BẢN ĐỒ CHỈ ĐƯỜNG LÃNH SỰ */}
+        {currentMenu === 'maps' && (
+          <div className="static-page-wrapper">
+            <h2 style={{ color: '#2b6cb0', fontFamily: 'Playfair Display', fontSize: '1.8rem' }}>📍 Bản Đồ Hành Chính Các Lãnh Sự Quán Tại TP.HCM</h2>
+            <p style={{ color: '#718096', marginTop: '0.5rem', fontSize: '0.9rem' }}>Tra cứu vị trí và sơ đồ tuyến đường di chuyển nộp hồ sơ xin visa thực tế.</p>
+            <div style={{ marginTop: '2rem', background: '#f7fafc', border: '1px dashed #cbd5e0', height: '300px', display: 'flex', alignItems: 'center', justifyText: 'center', borderRadius: '12px', textAlign: 'center', padding: '2rem' }}>
               <div>
-                <div className="vfs-tabs">
-                  <button className={`vfs-tab-trigger ${activeVfsTab === 'general' ? 'active' : ''}`} onClick={() => setActiveVfsTab('general')}>Tổng quát</button>
-                  <button className={`vfs-tab-trigger ${activeVfsTab === 'contact' ? 'active' : ''}`} onClick={() => setActiveVfsTab('contact')}>Địa chỉ & SĐT</button>
-                  <button className={`vfs-tab-trigger ${activeVfsTab === 'procedure' ? 'active' : ''}`} onClick={() => setActiveVfsTab('procedure')}>Đặt lịch hẹn</button>
-                </div>
-                <div className="vfs-pane">
-                  {activeVfsTab === 'general' && (
-                    <div>
-                      <p style={{ fontWeight: 'bold', marginBottom: '0.5rem' }}>{currentVfsObj.name.vi}</p>
-                      <p>{currentVfsObj.summary.vi}</p>
-                      <p style={{ marginTop: '0.5rem' }}>🕒 <b>Giờ làm việc:</b> {currentVfsObj.workingHours}</p>
-                    </div>
-                  )}
-                  {activeVfsTab === 'contact' && (
-                    <div>
-                      <p>📍 <b>Địa chỉ:</b> {currentVfsObj.address.vi}</p>
-                      <p style={{ marginTop: '0.4rem' }}>📞 <b>Hotline:</b> {currentVfsObj.hotline}</p>
-                      <p style={{ marginTop: '0.4rem' }}>✉️ <b>Email:</b> {currentVfsObj.email}</p>
-                    </div>
-                  )}
-                  {activeVfsTab === 'procedure' && (
-                    <div>
-                      <p>Vui lòng chuẩn bị hộ chiếu gốc, tờ khai in sẵn và lịch hẹn trước khi đến nộp dữ liệu sinh trắc học tại trung tâm.</p>
-                      <a href={currentVfsObj.link} target="_blank" rel="noopener noreferrer" className="vfs-link">Cổng đặt hẹn trực tuyến ↗</a>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div className="vfs-map">
-                <iframe src={currentVfsObj.mapIframe} width="100%" height="100%" style={{ border: 0 }} allowFullScreen="" loading="lazy"></iframe>
+                <p style={{ fontWeight: '600', color: '#4a5568' }}>Hệ thống bản đồ tích hợp vệ tinh</p>
+                <p style={{ fontSize: '0.82rem', color: '#718096', marginTop: '0.4rem' }}>Vị trí trung tâm các Quận 1, Quận 3 sẵn sàng kết nối dữ liệu địa chỉ.</p>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* MENU 3: ALBUM THƯ VIỆN KHÔNG GIAN HÌNH ẢNH */}
+        {currentMenu === 'gallery' && (
+          <div className="static-page-wrapper">
+            <h2 style={{ color: '#dd6b20', fontFamily: 'Playfair Display', fontSize: '1.8rem' }}>🖼️ Không Gian Tư Liệu Hình Ảnh Quốc Tế</h2>
+            <p style={{ color: '#718096', marginTop: '0.5rem', fontSize: '0.9rem' }}>Thư viện ảnh Landscape thực tế phục vụ thiết kế nội dung truyền thông tư vấn.</p>
+            <div className="static-grid-gallery">
+              {GLOBAL_LANDSCAPES.slice(0, 12).map((imgUrl, i) => (
+                <div key={i} className="gallery-photo-item" style={{ backgroundImage: `url('${imgUrl}')` }} />
+              ))}
+            </div>
+          </div>
+        )}
 
       </div>
 
-      {showTop && <button className="to-top" onClick={scrollToTop}>↑</button>}
-      {message && <div className="toast">{message}</div>}
+      {/* Scroll Trôi Về Đầu Trang */}
+      <button className={`scroll-to-top-btn ${showToTop ? 'visible' : ''}`} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} title="Lên đầu trang">
+        ↑
+      </button>
 
-      {/* Footer gốc sửa thông tin và nhúng Signature dải màu mượt chuyển động */}
-      <div className="footer">
-        <span>Consulate News Dashboard Portal</span> · {lang === 'vi' ? 'Hệ thống giám sát dữ liệu Lãnh sự' : 'Consular Data Monitor'} · © 2026
-        <div className="brand-signature">
-          <span style={{ color: '#999', fontWeight: 'normal' }}>Designed by</span> <span className="brand-name">Hungluu</span>
-        </div>
+      {/* Footer Credits Bar */}
+      <div className="footer-credits-bar">
+        <span>Kênh Thông Tin Thị Thực Quốc Tế</span> · Hệ thống tự động cập nhật tin tức định kỳ hàng ngày · © 2026
       </div>
-    </div>
+
+      {message && <div className="toast-notify-alert">{message}</div>}
+    </>
   );
 }
