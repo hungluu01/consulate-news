@@ -1,479 +1,668 @@
 import { useState, useEffect } from 'react';
 import Head from 'next/head';
 
-const STORAGE_KEY = 'read_articles';
-const SEEN_KEY = 'seen_articles';
-
-var COUNTRY_CONFIG = {
-  my:      { label: { vi: 'Mỹ', en: 'USA' },         tz: 'America/New_York', city: 'Washington D.C.', brand: 'ROLEX',    gradients: ['linear-gradient(135deg,#B22234,#3C3B6E)','linear-gradient(135deg,#3C3B6E,#B22234)','linear-gradient(135deg,#c0392b,#2980b9)'], icon: '🗽' },
-  nhat:    { label: { vi: 'Nhật', en: 'Japan' },      tz: 'Asia/Tokyo',       city: 'Tokyo',          brand: 'SEIKO',    gradients: ['linear-gradient(135deg,#BC002D,#fff)','linear-gradient(135deg,#e74c3c,#fadbd8)','linear-gradient(135deg,#c0392b,#f9ebea)'],  icon: '🗼' },
-  han:     { label: { vi: 'Hàn Quốc', en: 'Korea' }, tz: 'Asia/Seoul',       city: 'Seoul',          brand: 'CARTIER',  gradients: ['linear-gradient(135deg,#003478,#CD2E3A)','linear-gradient(135deg,#1a5276,#e74c3c)','linear-gradient(135deg,#154360,#c0392b)'], icon: '🏯' },
-  kvac:    { label: { vi: 'KVAC', en: 'KVAC' },       tz: 'Asia/Seoul',       city: 'Seoul',          brand: 'HAMILTON', gradients: ['linear-gradient(135deg,#0047AB,#CD2E3A)','linear-gradient(135deg,#1a5276,#e74c3c)','linear-gradient(135deg,#1f618d,#cb4335)'], icon: '🎭' },
-  uc:      { label: { vi: 'Úc', en: 'Australia' },    tz: 'Australia/Sydney', city: 'Sydney',         brand: 'OMEGA',    gradients: ['linear-gradient(135deg,#00008B,#FF0000)','linear-gradient(135deg,#1a237e,#b71c1c)','linear-gradient(135deg,#283593,#c62828)'],  icon: '🦘' },
-  canada:  { label: { vi: 'Canada', en: 'Canada' },   tz: 'America/Toronto',  city: 'Ottawa',         brand: 'TISSOT',   gradients: ['linear-gradient(135deg,#FF0000,#fff)','linear-gradient(135deg,#e53935,#ffcdd2)','linear-gradient(135deg,#c62828,#ef9a9a)'],   icon: '🍁' },
-  daiLoan: { label: { vi: 'Đài Loan', en: 'Taiwan' }, tz: 'Asia/Taipei',      city: 'Taipei',         brand: 'LONGINES', gradients: ['linear-gradient(135deg,#003F87,#FE0000)','linear-gradient(135deg,#1565c0,#f44336)','linear-gradient(135deg,#0d47a1,#e53935)'], icon: '🏔' },
+// Danh sách ảnh Landscape thực tế và Thương hiệu đồng hồ đặc trưng cho từng quốc gia
+const COUNTRY_CONFIG = {
+  all: {
+    bg: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1600&q=80', // Trái đất nhìn từ vũ trụ
+    brand: 'ROLEX',
+    sub: 'Hệ thống giám sát tin tức Lãnh sự quán & Visa thời gian thực',
+    timezone: 'Asia/Ho_Chi_Minh'
+  },
+  my: {
+    bg: 'https://images.unsplash.com/photo-1534430480872-3498386e7856?auto=format&fit=crop&w=1600&q=80', // New York Skyline
+    brand: 'ROLEX',
+    sub: 'Tin tức & Thông báo mới nhất từ Lãnh sự quán Hoa Kỳ tại TP.HCM',
+    timezone: 'America/New_York'
+  },
+  nhat: {
+    bg: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80', // Núi Phú Sĩ & Chùa
+    brand: 'SEIKO',
+    sub: 'Tin tức & Thông báo mới nhất từ Tổng lãnh sự quán Nhật Bản tại TP.HCM',
+    timezone: 'Asia/Tokyo'
+  },
+  han: {
+    bg: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1600&q=80', // Seoul ban đêm
+    brand: 'CARTIER',
+    sub: 'Tin tức & Thông báo mới nhất từ Tổng lãnh sự quán Hàn Quốc tại TP.HCM',
+    timezone: 'Asia/Seoul'
+  },
+  kvac: {
+    bg: 'https://images.unsplash.com/photo-1617541086271-64d852077e6b?auto=format&fit=crop&w=1600&q=80', // Cung điện Hàn Quốc
+    brand: 'CARTIER',
+    sub: 'Thông báo lịch hẹn và kết quả từ Trung tâm Văn hóa Hàn Quốc (KVAC HCM)',
+    timezone: 'Asia/Seoul'
+  },
+  uc: {
+    bg: 'https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1600&q=80', // Sydney Opera House
+    brand: 'OMEGA',
+    sub: 'Tin tức & Thông báo mới nhất từ Tổng lãnh sự quán Úc tại TP.HCM',
+    timezone: 'Australia/Sydney'
+  },
+  canada: {
+    bg: 'https://images.unsplash.com/photo-1486916856992-e4db22c8df33?auto=format&fit=crop&w=1600&q=80', // Hồ Moraine Canada kì vĩ
+    brand: 'JACOB & CO',
+    sub: 'Tin tức & Thông báo mới nhất từ Tổng lãnh sự quán Canada tại TP.HCM',
+    timezone: 'America/Toronto'
+  },
+  daiLoan: {
+    bg: 'https://images.unsplash.com/photo-1504618223053-559bdef9dd5a?auto=format&fit=crop&w=1600&q=80', // Taipei 101
+    brand: 'PATEK PHILIPPE',
+    sub: 'Tin tức từ Văn phòng Kinh tế Văn hóa Đài Bắc tại TP.HCM',
+    timezone: 'Asia/Taipei'
+  }
 };
 
-function getReadSet() { try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')); } catch { return new Set(); } }
-function getSeenSet() { try { return new Set(JSON.parse(localStorage.getItem(SEEN_KEY) || '[]')); } catch { return new Set(); } }
-function saveReadSet(s) { localStorage.setItem(STORAGE_KEY, JSON.stringify([...s])); }
-function saveSeenSet(s) { localStorage.setItem(SEEN_KEY, JSON.stringify([...s])); }
-
-function isToday(iso) {
-  if (!iso) return false;
-  try {
-    var d = new Date(iso); var n = new Date();
-    return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
-  } catch (e) { return false; }
-}
-
-function AnalogClock(props) {
-  var tz = props.tz; var label = props.label; var brand = props.brand; var flag = props.flag;
-  var [angles, setAngles] = useState({ h: 0, m: 0, s: 0 });
-  useEffect(function() {
-    function tick() {
-      var now = new Date();
-      var str = now.toLocaleTimeString('en-US', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
-      var parts = str.split(':');
-      var h = parseInt(parts[0]) % 12;
-      var m = parseInt(parts[1]);
-      var s = parseInt(parts[2]);
-      setAngles({ h: h * 30 + m * 0.5, m: m * 6, s: s * 6 });
-    }
-    tick();
-    var id = setInterval(tick, 1000);
-    return function() { clearInterval(id); };
-  }, [tz]);
-
-  var sz = 68; var cx = sz / 2; var cy = sz / 2; var r = sz / 2 - 3;
-  function handCoords(angle, len) {
-    var rad = (angle - 90) * Math.PI / 180;
-    return { x2: cx + len * Math.cos(rad), y2: cy + len * Math.sin(rad) };
-  }
-  var ticks = [];
-  for (var i = 0; i < 60; i++) {
-    var ang = (i * 6 - 90) * Math.PI / 180;
-    var isH = i % 5 === 0;
-    var r1 = r - (isH ? 9 : 4);
-    ticks.push({ x1: cx + r1 * Math.cos(ang), y1: cy + r1 * Math.sin(ang), x2: cx + r * Math.cos(ang), y2: cy + r * Math.sin(ang), isH: isH });
-  }
-  var hc = handCoords(angles.h, r * 0.48); var mc = handCoords(angles.m, r * 0.68); var sc = handCoords(angles.s, r * 0.82);
-
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '6px 10px', borderRight: '1px solid #fff0ea', minWidth: 82, flexShrink: 0 }}>
-      <div style={{ fontSize: 8, fontWeight: 900, color: '#ff6b35', letterSpacing: 1.5, marginBottom: 4, fontFamily: 'Georgia,serif' }}>{brand}</div>
-      <svg width={sz} height={sz}>
-        <circle cx={cx} cy={cy} r={r} fill="#fffaf8" stroke="#ffd5c0" strokeWidth="1.5"/>
-        <circle cx={cx} cy={cy} r={r - 4} fill="#fffaf8" stroke="#fff0ea" strokeWidth="0.5"/>
-        {ticks.map(function(t, i) {
-          return <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} stroke={t.isH ? '#ff6b35' : '#ffcfbb'} strokeWidth={t.isH ? 2 : 0.8} strokeLinecap="round"/>;
-        })}
-        <line x1={cx} y1={cy} x2={hc.x2} y2={hc.y2} stroke="#1a1a2e" strokeWidth="2.5" strokeLinecap="round"/>
-        <line x1={cx} y1={cy} x2={mc.x2} y2={mc.y2} stroke="#1a1a2e" strokeWidth="1.8" strokeLinecap="round"/>
-        <line x1={cx} y1={cy} x2={sc.x2} y2={sc.y2} stroke="#ff6b35" strokeWidth="1" strokeLinecap="round"/>
-        <circle cx={cx} cy={cy} r="3" fill="#ff6b35"/>
-        <circle cx={cx} cy={cy} r="1.5" fill="white"/>
-      </svg>
-      <div style={{ fontSize: 10, color: '#ff6b35', fontWeight: 800, marginTop: 3, textAlign: 'center' }}>{flag} {label}</div>
-    </div>
-  );
-}
-
-function GradientCard(props) {
-  var gradients = props.gradients; var icon = props.icon;
-  var [idx, setIdx] = useState(0);
-  var [fade, setFade] = useState(true);
-  useEffect(function() {
-    if (!gradients || gradients.length <= 1) return;
-    var id = setInterval(function() {
-      setFade(false);
-      setTimeout(function() { setIdx(function(i) { return (i + 1) % gradients.length; }); setFade(true); }, 300);
-    }, 3000);
-    return function() { clearInterval(id); };
-  }, [gradients]);
-  return (
-    <div style={{ position: 'relative', width: '100%', height: 130, borderRadius: '16px 16px 0 0', overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', inset: 0, background: gradients[idx], opacity: fade ? 1 : 0, transition: 'opacity 0.3s ease', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 44 }}>
-        {icon}
-      </div>
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.25) 100%)' }}></div>
-      <div style={{ position: 'absolute', bottom: 8, left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 5 }}>
-        {gradients.map(function(_, i) {
-          return <div key={i} style={{ width: i === idx ? 20 : 6, height: 5, borderRadius: 3, background: i === idx ? '#fff' : 'rgba(255,255,255,0.4)', transition: 'all 0.3s' }}></div>;
-        })}
-      </div>
-    </div>
-  );
-}
-
 export default function Home() {
-  var [data, setData] = useState(null);
-  var [loading, setLoading] = useState(true);
-  var [activeTab, setActiveTab] = useState('home');
-  var [fetching, setFetching] = useState(false);
-  var [message, setMessage] = useState('');
-  var [readSet, setReadSet] = useState(new Set());
-  var [seenSet, setSeenSet] = useState(new Set());
-  var [newCount, setNewCount] = useState(0);
-  var [lang, setLang] = useState('vi');
-  var [search, setSearch] = useState('');
-  var [showTop, setShowTop] = useState(false);
-  var [nameIn, setNameIn] = useState(false);
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeCountry, setActiveCountry] = useState('all');
+  const [fetching, setFetching] = useState(false);
+  const [message, setMessage] = useState('');
+  
+  // State cho đồng hồ kim
+  const [time, setTime] = useState(new Date());
 
-  useEffect(function() {
-    setReadSet(getReadSet()); setSeenSet(getSeenSet());
-    var sl = localStorage.getItem('lang'); if (sl) setLang(sl);
+  useEffect(() => {
     loadNews();
-    function onScroll() { setShowTop(window.scrollY > 300); }
-    window.addEventListener('scroll', onScroll);
-    setTimeout(function() { setNameIn(true); }, 200);
-    return function() { window.removeEventListener('scroll', onScroll); };
+    // Chạy đồng hồ tích tắc mỗi giây
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
-
-  function switchLang(l) { setLang(l); localStorage.setItem('lang', l); }
 
   async function loadNews() {
     setLoading(true);
     try {
-      var res = await fetch('/api/get-news');
-      var json = await res.json();
-      if (json && json.sources && json.sources.length > 0) {
-        setData(json);
-        var seen = getSeenSet(); var count = 0;
-        json.sources.forEach(function(s) { s.articles.forEach(function(a) { if (!seen.has(a.url)) count++; }); });
-        setNewCount(count);
-      }
-    } catch (e) { console.error(e); }
+      const res = await fetch('/api/get-news');
+      const json = await res.json();
+      setData(json);
+    } catch (e) {
+      console.error(e);
+    }
     setLoading(false);
   }
 
   async function triggerFetch() {
-    setFetching(true); setMessage('⏳ ' + (lang === 'vi' ? 'Đang cập nhật...' : 'Updating...'));
+    setFetching(true);
+    setMessage('⏳ Đang kết nối cổng Lãnh sự và cập nhật tin tức mới...');
     try {
-      var res = await fetch('/api/fetch-news', { method: 'POST', headers: { 'x-cron-secret': process.env.NEXT_PUBLIC_CRON_SECRET || '' } });
-      var json = await res.json();
-      if (json.success) { setMessage('✅ ' + json.total + (lang === 'vi' ? ' bài mới!' : ' articles!')); await loadNews(); }
-      else { setMessage('❌ ' + json.error); }
-    } catch (e) { setMessage('❌ Lỗi kết nối'); }
-    setFetching(false); setTimeout(function() { setMessage(''); }, 4000);
-  }
-
-  function markRead(url) {
-    var s = new Set(readSet); s.add(url); setReadSet(s); saveReadSet(s);
-    var se = new Set(seenSet); se.add(url); setSeenSet(se); saveSeenSet(se);
-  }
-  function markAllSeen() {
-    if (!data) return;
-    var se = new Set(seenSet);
-    data.sources.forEach(function(s) { s.articles.forEach(function(a) { se.add(a.url); }); });
-    setSeenSet(se); saveSeenSet(se); setNewCount(0);
-  }
-
-  var totalArticles = data && data.sources ? data.sources.reduce(function(s, x) { return s + x.articles.length; }, 0) : 0;
-  var todayCount = data && data.sources ? data.sources.reduce(function(s, x) { return s + x.articles.filter(function(a) { return isToday(a.date); }).length; }, 0) : 0;
-
-  var displaySources = [];
-  if (data && data.sources) {
-    if (activeTab === 'home') {
-      displaySources = data.sources.map(function(s) {
-        return Object.assign({}, s, { articles: s.articles.filter(function(a) { return isToday(a.date); }) });
-      }).filter(function(s) { return s.articles.length > 0; });
-    } else {
-      displaySources = data.sources.filter(function(s) { return s.country === activeTab; }).map(function(s) {
-        var sorted = s.articles.slice().sort(function(a, b) { return new Date(b.date) - new Date(a.date); });
-        return Object.assign({}, s, { articles: sorted });
+      const res = await fetch('/api/fetch-news', {
+        method: 'POST',
+        headers: { 'x-cron-secret': process.env.NEXT_PUBLIC_CRON_SECRET || '' }
       });
+      const json = await res.json();
+      if (json.success) {
+        setMessage(`✅ Hệ thống đã cập nhật thành công ${json.total} bài viết mới nhất!`);
+        await loadNews();
+      } else {
+        setMessage('❌ Lỗi xác thực hoặc sự cố kết nối: ' + json.error);
+      }
+    } catch (e) {
+      setMessage('❌ Thất bại: Lỗi kết nối đến máy chủ API');
     }
-    if (search.trim()) {
-      displaySources = displaySources.map(function(s) {
-        return Object.assign({}, s, { articles: s.articles.filter(function(a) { return a.title && a.title.toLowerCase().indexOf(search.toLowerCase()) >= 0; }) });
-      }).filter(function(s) { return s.articles.length > 0; });
-    }
+    setFetching(false);
+    setTimeout(() => setMessage(''), 5000);
   }
 
-  function fmtDate(iso) {
-    if (!iso) return '';
-    try { return new Date(iso).toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' }); } catch (e) { return ''; }
-  }
-  function getLabel(key) { var c = COUNTRY_CONFIG[key]; return c ? (c.label[lang] || c.label.vi) : key; }
+  const filteredSources = data?.sources?.filter(s => 
+    activeCountry === 'all' || s.country === activeCountry
+  ) || [];
+
+  const formatDate = (iso) => {
+    if (!iso) return 'Không rõ ngày';
+    const d = new Date(iso);
+    return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  };
+
+  // Tính toán góc quay của kim đồng hồ dựa trên Múi giờ quốc gia được chọn
+  const getClockAngles = () => {
+    const targetZone = COUNTRY_CONFIG[activeCountry]?.timezone || 'Asia/Ho_Chi_Minh';
+    // Chuyển đổi thời gian hiện tại của hệ thống sang múi giờ chỉ định
+    const targetTimeStr = time.toLocaleString('en-US', { timeZone: targetZone });
+    const targetDate = new Date(targetTimeStr);
+
+    const hours = targetDate.getHours();
+    const minutes = targetDate.getMinutes();
+    const seconds = targetDate.getSeconds();
+
+    return {
+      hour: (hours % 12) * 30 + minutes * 0.5,
+      minute: minutes * 6 + seconds * 0.1,
+      second: seconds * 6
+    };
+  };
+
+  const angles = getClockAngles();
+  const currentConfig = COUNTRY_CONFIG[activeCountry] || COUNTRY_CONFIG.all;
 
   return (
-    <div style={{ fontFamily: "'Nunito','Segoe UI',sans-serif", background: '#fff8f5', minHeight: '100vh' }}>
+    <>
       <Head>
-        <title>Kênh Cập Nhật Tin Tức Visa</title>
+        <title>Consulate News Monitor | Premium Dashboard</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
       </Head>
+
       <style>{`
-        *{box-sizing:border-box;margin:0;padding:0} html{scroll-behavior:smooth} body{background:#fff8f5;overflow-x:hidden}
-        a{text-decoration:none;color:inherit} button{cursor:pointer;font-family:'Nunito',sans-serif;border:none;outline:none} input{font-family:'Nunito',sans-serif}
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        html {
+          scroll-behavior: smooth;
+        }
 
-        .nav{background:#fff;box-shadow:0 2px 16px rgba(255,107,53,0.1);position:sticky;top:0;z-index:200;border-bottom:2px solid #fff0ea}
-        .nav-in{max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:56px;gap:8px}
-        .logo{display:flex;align-items:center;gap:8px;flex-shrink:0}
-        .logo-ico{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#ff6b35,#f7941d);display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 3px 10px rgba(255,107,53,0.3)}
-        .logo-txt{font-size:14px;font-weight:900;color:#1a1a2e;line-height:1.1} .logo-txt span{color:#ff6b35}
-        .logo-sub{font-size:9px;color:#ffb380;font-weight:700}
-        .nav-mid{flex:1;max-width:320px;margin:0 8px}
-        .sw{background:#fff0ea;border-radius:20px;display:flex;align-items:center;padding:7px 13px;gap:6px;border:1.5px solid #ffd5c0;transition:border-color 0.2s}
-        .sw:focus-within{border-color:#ff6b35;background:#fff}
-        .sw input{border:none;outline:none;background:transparent;font-size:12px;color:#333;flex:1;min-width:0}
-        .nav-r{display:flex;align-items:center;gap:6px;flex-shrink:0}
-        .lsw{display:flex;background:#fff0ea;border-radius:16px;padding:2px;border:1px solid #ffd5c0}
-        .lb{padding:4px 9px;border-radius:12px;font-size:11px;font-weight:800;background:transparent;color:#ff9970;transition:all 0.2s}
-        .lb.on{background:#ff6b35;color:#fff;box-shadow:0 2px 6px rgba(255,107,53,0.3)}
-        .bell{position:relative;width:34px;height:34px;border-radius:50%;border:1.5px solid #ffd5c0;background:#fff0ea;display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer;transition:all 0.2s}
-        .bell:hover{border-color:#ff6b35}
-        .bdot{position:absolute;top:1px;right:1px;width:9px;height:9px;background:#ff3b30;border-radius:50%;border:2px solid #fff;animation:pd 2s infinite}
-        @keyframes pd{0%,100%{transform:scale(1)}50%{transform:scale(1.4)}}
-        .upd{display:flex;align-items:center;gap:5px;padding:7px 13px;border-radius:18px;background:#1a1a2e;color:#fff;font-size:12px;font-weight:800;box-shadow:0 3px 10px rgba(26,26,46,0.2);transition:all 0.2s}
-        .upd:hover:not(:disabled){background:#2d2d5e} .upd:disabled{opacity:0.6;cursor:not-allowed}
-        .spin{animation:sp 1s linear infinite;display:inline-block}
-        @keyframes sp{to{transform:rotate(360deg)}}
+        body {
+          font-family: 'Be Vietnam Pro', sans-serif;
+          background: #060913;
+          color: #f1f5f9;
+          min-height: 100vh;
+          overflow-x: hidden;
+        }
 
-        .clocks-bar{background:#fff;border-bottom:2px solid #fff0ea;overflow-x:auto;-webkit-overflow-scrolling:touch}
-        .clocks-bar::-webkit-scrollbar{height:3px} .clocks-bar::-webkit-scrollbar-thumb{background:#ffd0bb;border-radius:3px}
-        .clocks-in{display:flex;min-width:max-content;padding:8px 14px;max-width:1280px;margin:0 auto}
+        /* Hero Container hoành tráng với hình ảnh thực tế mượt mà */
+        .hero {
+          position: relative;
+          height: 380px;
+          display: flex;
+          align-items: center;
+          padding: 0 2rem;
+          overflow: hidden;
+        }
 
-        .hero{background:linear-gradient(135deg,#ff6b35 0%,#f7941d 55%,#ffb347 100%);padding:38px 16px 92px;text-align:center;position:relative;overflow:hidden}
-        .hero::before{content:'';position:absolute;top:-80px;right:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(255,255,255,0.1) 0%,transparent 70%);pointer-events:none}
-        .hero::after{content:'';position:absolute;bottom:-50px;left:-50px;width:200px;height:200px;background:radial-gradient(circle,rgba(255,255,255,0.07) 0%,transparent 70%);pointer-events:none}
+        .hero-bg-wrapper {
+          position: absolute;
+          inset: 0;
+          z-index: 1;
+        }
 
-        .name-tag{font-size:clamp(11px,2.5vw,15px);font-weight:900;color:rgba(255,255,255,0.95);letter-spacing:4px;text-transform:uppercase;margin-bottom:10px;position:relative;z-index:1;display:inline-block;transition:transform 0.9s cubic-bezier(0.34,1.56,0.64,1),opacity 0.9s ease}
-        .name-tag.in{transform:translateY(0);opacity:1} .name-tag.out{transform:translateY(-50px);opacity:0}
+        .hero-bg {
+          position: absolute;
+          inset: 0;
+          background-size: cover;
+          background-position: center;
+          transition: opacity 0.8s ease-in-out, transform 1.2s ease-in-out;
+          opacity: 0;
+          transform: scale(1.02);
+        }
 
-        .hero h1{font-size:clamp(20px,4.5vw,36px);font-weight:900;color:#fff;margin-bottom:8px;line-height:1.25;position:relative;z-index:1;text-shadow:0 2px 12px rgba(0,0,0,0.1)}
-        .hero h1 em{font-style:normal;color:#fff3e0;border-bottom:2.5px solid rgba(255,255,255,0.5);padding-bottom:1px}
-        .hero-sub{font-size:13px;color:rgba(255,255,255,0.85);margin-bottom:22px;position:relative;z-index:1;max-width:500px;margin-left:auto;margin-right:auto}
-        .hstats{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;position:relative;z-index:1}
-        .sc{background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.3);border-radius:14px;padding:12px 18px;text-align:center;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
-        .sn{font-size:26px;font-weight:900;color:#fff} .sl{font-size:9px;color:rgba(255,255,255,0.85);font-weight:800;margin-top:2px;text-transform:uppercase;letter-spacing:0.5px}
+        .hero-bg.active {
+          opacity: 1;
+          transform: scale(1);
+        }
 
-        .fl{max-width:520px;margin:-24px auto 0;position:relative;z-index:10;padding:0 14px}
-        .fl-in{background:#fff;border-radius:50px;display:flex;align-items:center;gap:10px;padding:12px 20px;box-shadow:0 8px 28px rgba(255,107,53,0.2);border:2px solid #fff0ea;transition:border-color 0.2s}
-        .fl-in:focus-within{border-color:#ff6b35}
-        .fl-in input{border:none;outline:none;flex:1;font-size:13px;color:#333;font-family:'Nunito',sans-serif;min-width:0}
+        .hero-overlay {
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to right, rgba(6, 9, 19, 0.92) 30%, rgba(6, 9, 19, 0.4) 70%, rgba(6, 9, 19, 0.85) 100%),
+                      linear-gradient(to bottom, transparent 60%, #060913 100%);
+          z-index: 2;
+        }
 
-        .main{max-width:1280px;margin:0 auto;padding:22px 14px 90px}
-        .ibar{background:#fff;border-radius:14px;padding:11px 16px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;border:1.5px solid #fff0ea;flex-wrap:wrap;gap:8px;box-shadow:0 2px 8px rgba(255,107,53,0.06)}
-        .itxt{font-size:12px;color:#bbb;font-weight:600} .itxt b{color:#ff6b35}
-        .mbtn{background:none;border:1.5px solid #ff6b35;color:#ff6b35;padding:5px 13px;border-radius:14px;font-size:11px;font-weight:800;transition:all 0.2s} .mbtn:hover{background:#ff6b35;color:#fff}
+        .hero-inner {
+          position: relative;
+          z-index: 3;
+          max-width: 1200px;
+          width: 100%;
+          margin: 0 auto;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 2rem;
+        }
 
-        .chips{display:flex;gap:7px;flex-wrap:nowrap;overflow-x:auto;margin-bottom:20px;-webkit-overflow-scrolling:touch;padding-bottom:4px}
-        .chips::-webkit-scrollbar{height:3px} .chips::-webkit-scrollbar-thumb{background:#ffd0bb;border-radius:3px}
-        .chip{display:flex;align-items:center;gap:5px;padding:8px 14px;border-radius:22px;border:1.5px solid #ffd5c0;background:#fff;color:#ff9970;font-size:12px;font-weight:800;white-space:nowrap;flex-shrink:0;transition:all 0.2s;box-shadow:0 1px 4px rgba(255,107,53,0.06)}
-        .chip:hover{border-color:#ff6b35;color:#ff6b35;background:#fff5f0}
-        .chip.on{background:linear-gradient(135deg,#ff6b35,#f7941d);border-color:transparent;color:#fff;box-shadow:0 4px 14px rgba(255,107,53,0.3)}
-        .ccnt{font-size:10px;background:rgba(0,0,0,0.1);padding:2px 7px;border-radius:9px} .chip.on .ccnt{background:rgba(255,255,255,0.25)}
+        .hero-content {
+          max-width: 650px;
+        }
 
-        .notice{background:linear-gradient(135deg,#fff5f0,#fff0ea);border:1.5px solid #ffd5c0;border-radius:14px;padding:13px 16px;margin-bottom:18px;display:flex;align-items:center;gap:10px}
-        .notice-txt{font-size:12px;color:#ff9970;font-weight:700;line-height:1.5} .notice-txt b{color:#ff6b35}
+        .hero-title {
+          font-family: 'Playfair Display', serif;
+          font-size: clamp(2rem, 4vw, 2.8rem);
+          color: #fff;
+          font-weight: 700;
+          line-height: 1.2;
+          text-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
 
-        .src{margin-bottom:30px}
-        .src-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
-        .src-l{display:flex;align-items:center;gap:10px}
-        .src-bar{width:4px;height:28px;border-radius:4px;flex-shrink:0}
-        .src-nm{font-size:15px;font-weight:900;color:#1a1a2e} .src-sb{font-size:11px;color:#bbb;font-weight:600;margin-top:2px}
-        .src-bdg{background:#fff0ea;border:1px solid #ffd5c0;padding:4px 11px;border-radius:10px;font-size:11px;font-weight:800;color:#ff9970}
+        .hero-title span {
+          color: #38bdf8;
+          position: relative;
+        }
 
-        .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
-        @media(max-width:600px){.grid{grid-template-columns:1fr}}
+        .hero-sub {
+          font-size: 0.95rem;
+          color: #94a3b8;
+          margin-top: 0.8rem;
+          font-weight: 400;
+          line-height: 1.5;
+        }
 
-        .card{background:#fff;border-radius:18px;border:1.5px solid #ffeee6;overflow:hidden;text-decoration:none;display:block;transition:transform 0.22s ease,box-shadow 0.22s ease,border-color 0.22s ease;box-shadow:0 2px 10px rgba(255,107,53,0.06);position:relative}
-        .card:hover{transform:translateY(-4px);box-shadow:0 14px 36px rgba(255,107,53,0.14);border-color:#ffb380}
-        .card.rd{opacity:0.5} .card.rd:hover{opacity:0.85}
-        .ndot{position:absolute;top:138px;right:12px;z-index:5;width:10px;height:10px;background:#ff3b30;border-radius:50%;border:2px solid #fff;box-shadow:0 0 8px rgba(255,59,48,0.6);animation:pd 2s infinite}
-        .cbody{padding:12px 14px 8px}
-        .cbar{height:3px;width:100%;border-radius:3px;margin-bottom:9px}
-        .nbadge{display:inline-block;background:linear-gradient(135deg,#ff6b35,#f7941d);color:#fff;font-size:9px;font-weight:900;padding:3px 8px;border-radius:6px;margin-bottom:6px;letter-spacing:0.5px}
-        .ctitle{font-size:13px;font-weight:700;color:#1a1a2e;line-height:1.55;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-        .card.rd .ctitle{color:#ccc}
-        .cfoot{padding:8px 14px 12px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid #fff5f0}
-        .cdate{font-size:11px;color:#ddd;font-weight:700} .rtag{font-size:10px;font-weight:800;color:#ff6b35;background:#fff5f0;padding:3px 8px;border-radius:6px}
+        .last-updated {
+          font-size: 0.8rem;
+          color: #64748b;
+          margin-top: 1rem;
+          background: rgba(255,255,255,0.03);
+          padding: 0.4rem 0.8rem;
+          border-radius: 20px;
+          display: inline-block;
+          border: 1px solid rgba(255,255,255,0.05);
+        }
+        .last-updated b { color: #38bdf8; font-weight: 600; }
 
-        .empty{text-align:center;padding:60px 20px;color:#ffb380}
-        .empty-ico{font-size:48px;margin-bottom:12px;opacity:0.45}
-        .empty h2{font-size:16px;color:#ff9970;margin-bottom:8px;font-weight:900} .empty p{font-size:13px}
+        /* Widget Đồng hồ Analog xa xỉ */
+        .clock-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 0.5rem;
+        }
 
-        .ldg{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:50vh;gap:16px}
-        .loader{width:40px;height:40px;border:3px solid #ffd5c0;border-top-color:#ff6b35;border-radius:50%;animation:sp 0.7s linear infinite}
-        .ldg-txt{font-size:14px;font-weight:700;color:#ffb380}
+        .analog-clock {
+          width: 130px;
+          height: 130px;
+          border-radius: 50%;
+          background: radial-gradient(circle, #1e293b 0%, #0f172a 100%);
+          border: 4px solid #334155;
+          box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7), inset 0 2px 8px rgba(255,255,255,0.05);
+          position: relative;
+        }
 
-        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a1a2e;color:#fff;padding:12px 24px;border-radius:26px;font-size:13px;font-weight:800;z-index:999;box-shadow:0 8px 32px rgba(0,0,0,0.2);white-space:nowrap;animation:su 0.3s ease}
-        @keyframes su{from{transform:translateX(-50%) translateY(14px);opacity:0}to{transform:translateX(-50%) translateY(0);opacity:1}}
+        .clock-brand {
+          position: absolute;
+          top: 30px;
+          left: 0;
+          right: 0;
+          text-align: center;
+          font-size: 0.55rem;
+          font-weight: 700;
+          color: #94a3b8;
+          letter-spacing: 0.15em;
+        }
 
-        .totop{position:fixed;bottom:24px;right:16px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,#ff6b35,#f7941d);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:900;box-shadow:0 4px 18px rgba(255,107,53,0.4);cursor:pointer;z-index:100;transition:all 0.25s}
-        .totop:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(255,107,53,0.5)}
+        .clock-center {
+          position: absolute;
+          width: 8px; height: 8px;
+          background: #38bdf8;
+          border-radius: 50%;
+          top: 50%; left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 10;
+          box-shadow: 0 0 5px rgba(56,189,248,0.8);
+        }
 
-        .footer{background:linear-gradient(135deg,#1a1a2e,#2d2d5e);color:rgba(255,255,255,0.45);text-align:center;padding:22px 16px;font-size:12px;font-weight:700}
-        .footer span{color:#ff6b35}
+        .hand {
+          position: absolute;
+          bottom: 50%;
+          left: 50%;
+          transform-origin: bottom center;
+          border-radius: 4px;
+          transition: transform 0.2s cubic-bezier(0.4, 2.08, 0.55, 1);
+        }
 
-        @media(max-width:640px){.nav-mid{display:none} .logo-sub{display:none} .main{padding:16px 12px 80px} .hero{padding:30px 12px 84px}}
+        .hour-hand {
+          width: 4px; height: 32px;
+          background: #fff;
+          margin-left: -2px;
+        }
+
+        .min-hand {
+          width: 3px; height: 45px;
+          background: #cbd5e1;
+          margin-left: -1.5px;
+        }
+
+        .sec-hand {
+          width: 1.5px; height: 50px;
+          background: #ef4444;
+          margin-left: -0.75px;
+          transition: transform 1s linear; /* Trôi mượt tích tắc */
+        }
+
+        .clock-label {
+          font-size: 0.7rem;
+          color: #64748b;
+          text-transform: uppercase;
+          letter-spacing: 0.05em;
+          font-weight: 600;
+        }
+
+        /* Nút Tải lại cao cấp */
+        .btn-refresh {
+          background: linear-gradient(135deg, #0284c7, #0369a1);
+          color: #fff;
+          border: none;
+          padding: 0.75rem 1.6rem;
+          border-radius: 12px;
+          font-size: 0.88rem;
+          font-family: 'Be Vietnam Pro', sans-serif;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          white-space: nowrap;
+          box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2);
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          margin-top: 1rem;
+        }
+
+        .btn-refresh:hover:not(:disabled) {
+          background: linear-gradient(135deg, #38bdf8, #0284c7);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(56, 189, 248, 0.4);
+        }
+
+        .btn-refresh:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+        /* Toast thông báo */
+        .toast {
+          max-width: 1200px;
+          margin: 1rem auto 0;
+          padding: 0.8rem 1.2rem;
+          background: rgba(14, 165, 233, 0.1);
+          border: 1px solid rgba(14, 165, 233, 0.2);
+          border-radius: 12px;
+          font-size: 0.88rem;
+          color: #7dd3fc;
+          animation: fadeIn 0.3s ease;
+        }
+
+        /* Thanh cuộn ngang mượt cho Tabs trên Mobile */
+        .tabs-container {
+          max-width: 1200px;
+          margin: 2rem auto 0;
+          padding: 0 2rem;
+        }
+
+        .tabs {
+          display: flex;
+          gap: 0.6rem;
+          overflow-x: auto;
+          padding-bottom: 0.5rem;
+          scrollbar-width: none; /* Ẩn scrollbar trên Firefox */
+        }
+
+        .tabs::-webkit-scrollbar { display: none; } /* Ẩn trên Chrome/Safari */
+
+        .tab {
+          padding: 0.55rem 1.3rem;
+          border-radius: 24px;
+          border: 1px solid rgba(255,255,255,0.05);
+          background: rgba(255,255,255,0.02);
+          color: #94a3b8;
+          font-size: 0.85rem;
+          font-family: 'Be Vietnam Pro', sans-serif;
+          cursor: pointer;
+          transition: all 0.25s ease;
+          white-space: nowrap;
+        }
+
+        .tab:hover { 
+          border-color: rgba(56,189,248,0.3); 
+          color: #cbd5e1;
+          background: rgba(255,255,255,0.04);
+        }
+
+        .tab.active {
+          background: rgba(14, 165, 233, 0.15);
+          border-color: rgba(56, 189, 248, 0.5);
+          color: #38bdf8;
+          font-weight: 600;
+          box-shadow: inset 0 1px 2px rgba(255,255,255,0.05);
+        }
+
+        /* Khu vực hiển thị lưới bài viết bọc khung kính mờ */
+        .main {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 2rem;
+        }
+
+        .source-block {
+          margin-bottom: 3.5rem;
+          animation: fadeInUp 0.6s ease-in-out;
+        }
+
+        .source-header {
+          display: flex;
+          align-items: center;
+          gap: 0.85rem;
+          margin-bottom: 1.2rem;
+          padding-bottom: 0.85rem;
+          border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .source-flag { font-size: 1.8rem; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+
+        .source-name {
+          font-size: 1.1rem;
+          font-weight: 600;
+          color: #f8fafc;
+        }
+
+        .source-count {
+          margin-left: auto;
+          font-size: 0.78rem;
+          color: #94a3b8;
+          background: rgba(255,255,255,0.05);
+          padding: 0.25rem 0.75rem;
+          border-radius: 12px;
+          border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .source-updated {
+          font-size: 0.75rem;
+          color: #64748b;
+          margin-top: 0.1rem;
+        }
+
+        .articles-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 1rem;
+        }
+
+        /* Thẻ bài viết nâng cấp cực sang trọng */
+        .article-card {
+          background: linear-gradient(135deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%);
+          border: 1px solid rgba(255,255,255,0.06);
+          border-radius: 16px;
+          padding: 1.2rem;
+          transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+          cursor: pointer;
+          text-decoration: none;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          height: 100%;
+        }
+
+        .article-card:hover {
+          background: linear-gradient(135deg, rgba(14, 165, 233, 0.08) 0%, rgba(14, 165, 233, 0.02) 100%);
+          border-color: rgba(56, 189, 248, 0.25);
+          transform: translateY(-4px);
+          box-shadow: 0 12px 20px -10px rgba(0, 0, 0, 0.5);
+        }
+
+        .article-url {
+          font-size: 0.85rem;
+          color: #e2e8f0;
+          word-break: break-all;
+          line-height: 1.5;
+          font-weight: 400;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          transition: color 0.2s;
+        }
+
+        .article-card:hover .article-url {
+          color: #38bdf8;
+        }
+
+        .article-date {
+          font-size: 0.75rem;
+          color: #64748b;
+          margin-top: 1rem;
+          display: flex;
+          align-items: center;
+          gap: 0.3rem;
+        }
+
+        .dot-accent {
+          display: inline-block;
+          width: 8px; height: 8px;
+          border-radius: 50%;
+          margin-top: 0.3rem;
+          flex-shrink: 0;
+          box-shadow: 0 0 8px currentColor;
+        }
+
+        /* Các màn hình trạng thái */
+        .empty, .loading {
+          text-align: center;
+          padding: 5rem 2rem;
+          color: #64748b;
+          background: rgba(255,255,255,0.01);
+          border-radius: 20px;
+          border: 1px dashed rgba(255,255,255,0.05);
+        }
+        .empty h2 { font-size: 1.2rem; margin-bottom: 0.5rem; color: #94a3b8; }
+        .empty p { font-size: 0.9rem; }
+
+        .loading {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.8rem;
+          font-size: 0.95rem;
+        }
+
+        .spinner {
+          width: 24px; height: 24px;
+          border: 2px solid rgba(56,189,248,0.1);
+          border-top-color: #38bdf8;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Tối ưu hóa cực mạnh cho thiết bị di động (Mobile Responsive) */
+        @media (max-width: 768px) {
+          .hero { height: auto; padding: 3rem 1.5rem; }
+          .hero-inner { flex-direction: column; text-align: center; gap: 2rem; }
+          .hero-content { display: flex; flex-direction: column; align-items: center; }
+          .btn-refresh { width: 100%; justify-content: center; }
+          .tabs-container { padding: 0 1.5rem; margin-top: 1.5rem; }
+          .main { padding: 1.5rem; }
+          .articles-grid { grid-template-columns: 1fr; }
+        }
       `}</style>
 
-      {/* NAVBAR */}
-      <nav className="nav">
-        <div className="nav-in">
-          <div className="logo">
-            <div className="logo-ico">📰</div>
-            <div>
-              <div className="logo-txt">Tin Tức <span>Visa</span></div>
-              <div className="logo-sub">Cập nhật 7:00 SA · Chính thống</div>
-            </div>
-          </div>
-          <div className="nav-mid">
-            <div className="sw">
-              <span style={{ color: '#ffb380', fontSize: 14 }}>🔍</span>
-              <input placeholder={lang === 'vi' ? 'Tìm kiếm tin tức...' : 'Search news...'} value={search} onChange={function(e) { setSearch(e.target.value); }} />
-            </div>
-          </div>
-          <div className="nav-r">
-            <div className="lsw">
-              <button className={'lb' + (lang === 'vi' ? ' on' : '')} onClick={function() { switchLang('vi'); }}>VI</button>
-              <button className={'lb' + (lang === 'en' ? ' on' : '')} onClick={function() { switchLang('en'); }}>EN</button>
-            </div>
-            <button className="bell" onClick={markAllSeen}>🔔{newCount > 0 && <span className="bdot"></span>}</button>
-            <button className="upd" onClick={triggerFetch} disabled={fetching}>
-              <span className={fetching ? 'spin' : ''}>↻</span>
-              {fetching ? '...' : (lang === 'vi' ? 'Cập nhật' : 'Update')}
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* ANALOG CLOCKS */}
-      <div className="clocks-bar">
-        <div className="clocks-in">
-          {Object.entries(COUNTRY_CONFIG).filter(function(e) { return e[0] !== 'kvac'; }).map(function(entry) {
-            var key = entry[0]; var cfg = entry[1];
-            var src = data && data.sources ? data.sources.find(function(s) { return s.country === key; }) : null;
-            return <AnalogClock key={key} tz={cfg.tz} label={cfg.city} brand={cfg.brand} flag={src ? src.flag : cfg.icon} />;
-          })}
-        </div>
-      </div>
-
-      {/* HERO */}
+      {/* Hero Section với cấu trúc ảnh đè mượt mà */}
       <div className="hero">
-        <div className={'name-tag' + (nameIn ? ' in' : ' out')}>✦ Lưu Chánh Hưng ✦</div>
-        <h1>Kênh Cập Nhật <em>Tin Tức Visa</em></h1>
-        <p className="hero-sub">{lang === 'vi' ? 'Cập nhật tin tức chính thống từ Lãnh sự quán các nước tại TP.HCM' : 'Official visa news from Consulates in Ho Chi Minh City'}</p>
-        <div className="hstats">
-          <div className="sc"><div className="sn">{todayCount}</div><div className="sl">{lang === 'vi' ? 'Tin hôm nay' : 'Today'}</div></div>
-          <div className="sc"><div className="sn">{totalArticles}</div><div className="sl">{lang === 'vi' ? 'Tổng bài' : 'Total'}</div></div>
-          <div className="sc"><div className="sn">{data && data.sources ? data.sources.length : 0}</div><div className="sl">{lang === 'vi' ? 'Nguồn' : 'Sources'}</div></div>
-          <div className="sc"><div className="sn">{newCount}</div><div className="sl">{lang === 'vi' ? 'Chưa đọc' : 'Unread'}</div></div>
+        <div className="hero-bg-wrapper">
+          {Object.keys(COUNTRY_CONFIG).map((key) => (
+            <div
+              key={key}
+              className={`hero-bg ${activeCountry === key ? 'active' : ''}`}
+              style={{ backgroundImage: `url('${COUNTRY_CONFIG[key].bg}')` }}
+            />
+          ))}
         </div>
-      </div>
-
-      {/* FLOATING SEARCH */}
-      <div className="fl">
-        <div className="fl-in">
-          <span style={{ color: '#ff6b35', fontSize: 18 }}>🔍</span>
-          <input placeholder={lang === 'vi' ? 'Tìm kiếm tin tức...' : 'Search news...'} value={search} onChange={function(e) { setSearch(e.target.value); }} />
-          {search && <span style={{ cursor: 'pointer', color: '#ffb380', fontSize: 15 }} onClick={function() { setSearch(''); }}>✕</span>}
-        </div>
-      </div>
-
-      {/* MAIN */}
-      <div className="main">
-        {data && data.lastUpdated && (
-          <div className="ibar" style={{ marginTop: 24 }}>
-            <div className="itxt">{lang === 'vi' ? 'Cập nhật lần cuối' : 'Last updated'}: <b>{fmtDate(data.lastUpdated)}</b> · {totalArticles} {lang === 'vi' ? 'bài' : 'articles'}</div>
-            {newCount > 0 && <button className="mbtn" onClick={markAllSeen}>✓ {lang === 'vi' ? 'Đánh dấu đã xem' : 'Mark all read'} ({newCount})</button>}
-          </div>
-        )}
-
-        {data && data.sources && data.sources.length > 0 && (
-          <div className="chips" style={{ marginTop: data && data.lastUpdated ? 0 : 24 }}>
-            <button className={'chip' + (activeTab === 'home' ? ' on' : '')} onClick={function() { setActiveTab('home'); }}>
-              🏠 {lang === 'vi' ? 'Hôm nay' : 'Today'} <span className="ccnt">{todayCount}</span>
+        <div className="hero-overlay"></div>
+        
+        <div className="hero-inner">
+          <div className="hero-content">
+            <h1 className="hero-title">
+              Consulate <span>News</span> Monitor
+            </h1>
+            <p className="hero-sub">{currentConfig.sub}</p>
+            {data?.lastUpdated && (
+              <p className="last-updated">
+                Hệ thống đồng bộ lúc: <b>{formatDate(data.lastUpdated)}</b>
+              </p>
+            )}
+            <button className="btn-refresh" onClick={triggerFetch} disabled={fetching}>
+              {fetching ? '⏳ Đang đồng bộ...' : '🔄 Làm mới cổng thông tin'}
             </button>
-            {data.sources.map(function(s) {
-              return (
-                <button key={s.country} className={'chip' + (activeTab === s.country ? ' on' : '')} onClick={function() { setActiveTab(s.country); }}>
-                  {s.flag} {getLabel(s.country)} <span className="ccnt">{s.articles.length}</span>
-                </button>
-              );
-            })}
           </div>
-        )}
 
+          {/* Khối đồng hồ cơ sang xịn */}
+          <div className="clock-container">
+            <div className="analog-clock">
+              <div className="clock-brand">{currentConfig.brand}</div>
+              <div className="clock-center"></div>
+              <div className="hand hour-hand" style={{ transform: `rotate(${angles.hour}deg)` }}></div>
+              <div className="hand min-hand" style={{ transform: `rotate(${angles.minute}deg)` }}></div>
+              <div className="hand sec-hand" style={{ transform: `rotate(${angles.second}deg)` }}></div>
+            </div>
+            <div className="clock-label">
+              {activeCountry === 'all' ? 'VIỆT NAM' : activeCountry.toUpperCase()} TIME
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {message && <div className="tabs-container"><div className="toast">{message}</div></div>}
+
+      {/* Bộ lọc Tabs mượt mà hỗ trợ vuốt chạm trên mobile */}
+      {data?.sources?.length > 0 && (
+        <div className="tabs-container">
+          <div className="tabs">
+            <button className={`tab ${activeCountry === 'all' ? 'active' : ''}`} onClick={() => setActiveCountry('all')}>
+              🌏 Toàn bộ khu vực
+            </button>
+            {data.sources.map(s => (
+              <button key={s.country} className={`tab ${activeCountry === s.country ? 'active' : ''}`} onClick={() => setActiveCountry(s.country)}>
+                {s.flag} {s.name.replace('Tổng lãnh sự quan ', '').replace('Lãnh sự quán ', '')}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Main Container */}
+      <div className="main">
         {loading ? (
-          <div className="ldg"><div className="loader"></div><div className="ldg-txt">{lang === 'vi' ? 'Đang tải...' : 'Loading...'}</div></div>
-        ) : (!data || !data.sources || data.sources.length === 0) ? (
-          <div className="empty"><div className="empty-ico">📭</div><h2>{lang === 'vi' ? 'Chưa có dữ liệu' : 'No data yet'}</h2><p>{lang === 'vi' ? 'Click Cập nhật để fetch tin tức' : 'Click Update to fetch news'}</p></div>
-        ) : (
-          <div>
-            {activeTab === 'home' && (
-              <div className="notice">
-                <span style={{ fontSize: 20 }}>📅</span>
-                <div className="notice-txt">
-                  {lang === 'vi'
-                    ? <span>Trang chủ chỉ hiển thị <b>tin cập nhật hôm nay</b>. Nhấn vào tên quốc gia để xem toàn bộ tin theo thứ tự mới nhất.</span>
-                    : <span>Homepage shows <b>today's news only</b>. Tap a country name to view all articles sorted by latest.</span>}
-                </div>
-              </div>
-            )}
-            {displaySources.length === 0 ? (
-              <div className="empty">
-                <div className="empty-ico">🌅</div>
-                <h2>{lang === 'vi' ? 'Chưa có tin mới hôm nay' : 'No news today yet'}</h2>
-                <p>{lang === 'vi' ? 'Nhấn Cập nhật để fetch tin mới nhất' : 'Click Update to fetch latest news'}</p>
-              </div>
-            ) : (
-              displaySources.map(function(source) {
-                var cfg = COUNTRY_CONFIG[source.country] || {};
-                var grads = cfg.gradients || ['linear-gradient(135deg,#ff6b35,#f7941d)'];
-                var icon = cfg.icon || '🌏';
-                return (
-                  <div key={source.country} className="src">
-                    <div className="src-head">
-                      <div className="src-l">
-                        <div className="src-bar" style={{ background: source.color }}></div>
-                        <div>
-                          <div className="src-nm">{source.flag} {source.name}</div>
-                          <div className="src-sb">{fmtDate(source.updatedAt)}</div>
-                        </div>
-                      </div>
-                      <span className="src-bdg">{source.articles.length} {lang === 'vi' ? 'bài' : 'art.'}</span>
-                    </div>
-                    <div className="grid">
-                      {source.articles.map(function(article, i) {
-                        var isRead = readSet.has(article.url);
-                        var isNew = !seenSet.has(article.url);
-                        return (
-                          <a key={i} href={article.url ? article.url : '#'} target="_blank" rel="noopener noreferrer"
-                            className={'card' + (isRead ? ' rd' : '')}
-                            onClick={function() { markRead(article.url); }}>
-                            {isNew && !isRead && <span className="ndot"></span>}
-                            <GradientCard gradients={grads} icon={icon} />
-                            <div className="cbody">
-                              <div className="cbar" style={{ background: source.color }}></div>
-                              {isNew && !isRead && <span className="nbadge">{lang === 'vi' ? 'MỚI' : 'NEW'}</span>}
-                              <div className="ctitle">{article.title}</div>
-                            </div>
-                            <div className="cfoot">
-                              <span className="cdate">📅 {fmtDate(article.date)}</span>
-                              {isRead && <span className="rtag">✓ {lang === 'vi' ? 'Đã đọc' : 'Read'}</span>}
-                            </div>
-                          </a>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })
-            )}
+          <div className="loading">
+            <div className="spinner"></div>
+            Đang tải dữ liệu bộ nhớ đệm...
           </div>
+        ) : !data?.sources?.length ? (
+          <div className="empty">
+            <h2>Hệ thống trống dữ liệu</h2>
+            <p>Vui lòng click nút <b>"Làm mới cổng thông tin"</b> để nạp dữ liệu từ các Lãnh sự quán.</p>
+          </div>
+        ) : (
+          filteredSources.map(source => (
+            <div key={source.country} className="source-block">
+              <div className="source-header">
+                <span className="source-flag">{source.flag}</span>
+                <div>
+                  <div className="source-name">{source.name}</div>
+                  <div className="source-updated">Lần quét cuối: {formatDate(source.updatedAt)}</div>
+                </div>
+                <span className="source-count">{source.articles.length} bài viết</span>
+              </div>
+              <div className="articles-grid">
+                {source.articles.map((article, i) => (
+                  <a key={i} href={article.url} target="_blank" rel="noopener noreferrer" className="article-card">
+                    <div style={{display:'flex', alignItems:'flex-start', gap:'0.6rem'}}>
+                      <span className="dot-accent" style={{color: source.color, background: source.color}}></span>
+                      <span className="article-url">{article.title || article.url}</span>
+                    </div>
+                    {/* KHẮC PHỤC LỖI HIỂN THỊ NGÀY THÁNG: Thay thế hoàn toàn article.lastmod thành article.date */}
+                    <div className="article-date">📅 {formatDate(article.date)}</div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))
         )}
       </div>
-
-      <div className="footer">
-        <span>Kênh Cập Nhật Tin Tức Visa</span> · {lang === 'vi' ? 'Tự động lúc 7:00 SA mỗi ngày' : 'Auto-updates at 7:00 AM'} · © 2026
-      </div>
-
-      {message && <div className="toast">{message}</div>}
-      {showTop && <button className="totop" onClick={function() { window.scrollTo({ top: 0, behavior: 'smooth' }); }}>↑</button>}
-    </div>
+    </>
   );
 }
